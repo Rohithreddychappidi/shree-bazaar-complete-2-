@@ -70,10 +70,12 @@ export default function CheckoutPage() {
   // at order-creation time, so what's shown here matches what actually gets charged.
   useEffect(() => {
     if (!addressId || cart.length === 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- resetting shipping when the address/cart becomes empty, not a derived-state anti-pattern
       setShipping(null);
       return;
     }
     let cancelled = false;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- marks the start of an async fetch triggered by this effect, not a derived-state anti-pattern
     setShippingLoading(true);
     api
       .post<{ shipping: number }>("/api/orders/shipping-rate", { items: buildOrderItems(), addressId })
