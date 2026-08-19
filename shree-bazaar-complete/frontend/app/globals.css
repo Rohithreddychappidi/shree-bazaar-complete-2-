@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-purple-50: #F3F0FF;
+  --color-purple-100: #EDE7FF;
+  --color-purple-400: #A78BFA;
+  --color-purple-500: #8B5CF6;
+  --color-purple-700: #6D28D9;
+  --color-purple-800: #5B21B6;
+  --font-display: "Outfit", sans-serif;
+  --font-sans: "Inter", sans-serif;
+}
+
+body {
+  background: #F8F8FC;
+  color: #111827;
+  font-family: var(--font-sans);
+}
+
+h1, h2, h3, h4, .font-display {
+  font-family: var(--font-display);
+}
+
+/* Swiper pagination dots, styled to match the brand */
+.hero-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.55);
+  display: inline-block;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.hero-dot-active {
+  width: 20px;
+  border-radius: 4px;
+  background: #fff;
+}
+
+/* Scrolling announcement bar */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-marquee {
+  display: inline-block;
+  animation: marquee 18s linear infinite;
+}

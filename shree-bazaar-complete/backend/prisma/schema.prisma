@@ -1,0 +1,266 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+  SUB_ADMIN
+}
+
+enum VariantType {
+  none
+  size_color
+  weight
+}
+
+enum DiscountType {
+  PERCENT
+  FLAT
+}
+
+model User {
+  id                 String    @id @default(uuid())
+  email              String    @unique
+  name               String?
+  phone              String?
+  whatsappNumber     String?
+  marketingConsent   Boolean   @default(false)
+  profileCompletedAt DateTime? // set once they've been through the post-login "add your
+                                // details" prompt, so we don't keep re-asking
+  avatarUrl          String?
+  googleId           String?   @unique
+  password           String?   // hashed, only set for admin-created sub-admin accounts — Google
+                                 // accounts (customers, the master admin) never have one
+  role               Role      @default(CUSTOMER)
+  addresses          Address[]
+  orders             Order[]
+  couponRedemptions  CouponRedemption[]
+  createdProducts    Product[] @relation("ProductCreatedBy") // products this user (typically a sub-admin) added
+  createdAt          DateTime  @default(now())
+}
+
+model Category {
+  id            String    @id @default(uuid())
+  slug          String    @unique
+  name          String
+  subcategories String[]
+  icon          String
+  image         String
+  products      Product[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Product {
+  id          String           @id @default(uuid())
+  slug        String           @unique
+  name        String
+  brand       String
+  description String?
+  price       Int
+  oldPrice    Int
+  rating      Float            @default(4.5)
+  ratingCount Int              @default(0)
+  image       String
+  images      String[]
+  tag         String?
+  variantType VariantType      @default(none)
+  sizeChart   Json?            // per-size measurements for size_color products, e.g.
+                                // { "M": { "Shoulder": "18in", "Chest": "40in" }, "L": {...} }
+                                // — admin-entered, shown as a size guide on the product page
+  stock            Int?        // only meaningful for variantType "none" — variant products
+                                // (size_color, weight) track stock per-variant instead, see
+                                // ProductVariant.stock below. Null = stock not tracked (always
+                                // orderable) for products created before this feature existed.
+  weightKg         Float       @default(0.3) // package weight used for live Shiprocket rate
+                                // calculation and shipment creation. Only used directly for
+                                // variantType "none" — variant products use ProductVariant.weightKg
+                                // (falling back to this value if a variant doesn't override it).
+  outOfStockSince  DateTime?   // set the moment stock (or every variant's stock) hits 0;
+                                // cleared on restock. Products stay visible with an "Out of
+                                // Stock" label for 24h from this timestamp, then are hidden
+                                // from public listings automatically — see products.routes.js
+  pickupLocation   String?     // must match a pickup address name already registered in the
+                                // Shiprocket account — falls back to StoreSettings.defaultPickupLocation
+                                // if not set. Lets different products ship from different warehouses.
+  createdById String?          // which staff member (admin or sub-admin) added this product —
+                                // null for products that existed before this field was added.
+                                // Used to scope sub-admins to only the orders for products they added.
+  createdBy   User?            @relation("ProductCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  categoryId  String
+  category    Category         @relation(fields: [categoryId], references: [id])
+  variants    ProductVariant[]
+  orderItems  OrderItem[]
+  coupons     Coupon[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model ProductVariant {
+  id          String      @id @default(uuid())
+  productId   String
+  product     Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  size        String?
+  colorName   String?
+  colorHex    String?
+  weightLabel String?
+  price       Int
+  oldPrice    Int
+  stock       Int         @default(0)
+  weightKg    Float?      // overrides the parent Product's weightKg for this specific variant
+                           // (e.g. a heavier size or a grocery weight-tier) — falls back to
+                           // Product.weightKg when null.
+  orderItems  OrderItem[]
+}
+
+model Address {
+  id        String  @id @default(uuid())
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label     String
+  name      String
+  line      String
+  city      String
+  pincode   String? // nullable for addresses saved before this field existed — falls back to
+                     // regex-extracting a 6-digit number from `city` where still needed
+  phone     String
+  isDefault Boolean @default(false)
+}
+
+model Order {
+  id                 String      @id @default(uuid())
+  userId             String
+  user               User        @relation(fields: [userId], references: [id])
+  status             String      @default("Placed") // Placed, Shipped, Delivered, Cancelled
+  subtotal           Int
+  shipping           Int         @default(0)
+  discountAmount     Int         @default(0)
+  couponCode         String?
+  total              Int
+  paymentMethod      String
+  razorpayOrderId    String?
+  razorpayPaymentId  String?
+  // Legacy single-shipment fields — kept so existing test orders created before
+  // multi-location support still read fine. New orders use `shipments` below instead,
+  // since one order can now split into several shipments if its items ship from
+  // different pickup locations.
+  shiprocketOrderId  String?
+  trackingId         String?
+  addressSnapshot    Json
+  items              OrderItem[]
+  shipments          Shipment[]
+  cancelledAt        DateTime?
+  cancellationReason String?
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+}
+
+// One row per Shiprocket shipment. An order with items from two different pickup
+// locations produces two Shipment rows — Shiprocket requires one shipment = one origin,
+// so a multi-warehouse order can't be a single API call.
+model Shipment {
+  id                String   @id @default(uuid())
+  orderId           String
+  order             Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  pickupLocation    String
+  shiprocketOrderId String?
+  shipmentId        String?
+  trackingId        String?
+  status            String   @default("Placed")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model OrderItem {
+  id           String          @id @default(uuid())
+  orderId      String
+  order        Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId    String
+  product      Product         @relation(fields: [productId], references: [id])
+  variantId    String?
+  variant      ProductVariant? @relation(fields: [variantId], references: [id])
+  name         String
+  variantLabel String?
+  price        Int
+  quantity     Int
+}
+
+model Coupon {
+  id            String       @id @default(uuid())
+  code          String       @unique
+  discountType  DiscountType
+  discountValue Int          // percent (0-100) or flat rupees, depending on discountType
+  productId     String?      // null = applies store-wide; set = this product only
+  product       Product?     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  startsAt      DateTime
+  endsAt        DateTime
+  maxUses       Int?         // null = unlimited (global cap, on top of the one-per-user limit below)
+  usedCount     Int          @default(0)
+  active        Boolean      @default(true)
+  redemptions   CouponRedemption[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+// Every coupon is limited to one redemption per user — this table enforces that. Checked
+// both at preview time (if the user is logged in) and authoritatively at order creation.
+model CouponRedemption {
+  id        String   @id @default(uuid())
+  couponId  String
+  coupon    Coupon   @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orderId   String
+  createdAt DateTime @default(now())
+
+  @@unique([couponId, userId])
+}
+
+// Single-row table for store-wide configuration. The app always reads/writes the one
+// row with id "default".
+model StoreSettings {
+  id                      String   @id @default("default")
+  storeName               String   @default("Shree Bazaar")
+  freeShippingThreshold   Int      @default(999)
+  cancellationPolicy      String   @default("Orders can be cancelled within 8 hours of being placed, as long as they haven't shipped yet. After that, the order is final.")
+  cancellationWindowHours Int      @default(8)
+  contactPhone            String?
+  contactEmail            String?
+  contactAddress          String?
+  socialInstagram         String?
+  socialFacebook          String?
+  socialLinkedin          String?
+  announcementText        String   @default("Free delivery on orders above ₹999 • Use code WELCOME10 for 10% off your first order")
+  announcementEnabled     Boolean  @default(true)
+  defaultPickupLocation   String   @default("Primary") // used for any product without its own pickupLocation set
+  defaultPickupPincode    String?  // pincode of the default pickup address — needed for live Shiprocket
+                                    // rate-checking (which requires both pickup + delivery pincode).
+                                    // Note: rate quotes always use this ONE pincode for the estimate,
+                                    // even for products whose actual pickupLocation differs — an
+                                    // approximation, not a per-warehouse-accurate quote. Real invoicing
+                                    // from Shiprocket is unaffected since actual shipment creation still
+                                    // uses each product's real pickupLocation correctly.
+  updatedAt               DateTime @updatedAt
+}
+
+// Admin-managed hero banner slides for the homepage — replaces the old hardcoded
+// lib/hero-slides.ts on the frontend.
+model HeroSlide {
+  id        String   @id @default(uuid())
+  eyebrow   String
+  title     String
+  text      String
+  image     String
+  ctaLabel  String
+  ctaHref   String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
