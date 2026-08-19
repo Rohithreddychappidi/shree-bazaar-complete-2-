@@ -5,7 +5,7 @@ import { api } from "./api";
 import { Order } from "./use-orders";
 
 export type AdminOrder = Order & {
-  user: { id: string; name: string | null; email: string };
+  user: { id: string; name: string | null; email: string; phone: string | null };
 };
 
 // Admin-only: every order from every customer (GET /api/admin/orders), unlike
