@@ -65,6 +65,18 @@ export default function CheckoutPage() {
   const addressId = selectedAddress ?? addresses.find((a) => a.isDefault)?.id ?? addresses[0]?.id ?? null;
   const total = shipping === null ? null : Math.max(0, cartTotal - discountAmount) + shipping;
 
+  const buildOrderItems = () =>
+    cart.map((line) => ({
+      productId: line.product.id,
+      variantId: line.variant?.id,
+      name: line.product.name,
+      variantLabel: line.variant
+        ? line.variant.weightLabel ?? [line.variant.size, line.variant.color?.name].filter(Boolean).join(" / ")
+        : undefined,
+      price: line.variant?.price ?? line.product.price,
+      quantity: line.quantity,
+    }));
+
   // Live delivery fee, recalculated whenever the selected address or cart contents
   // change — mirrors the same computeShipping logic the backend uses authoritatively
   // at order-creation time, so what's shown here matches what actually gets charged.
@@ -75,7 +87,6 @@ export default function CheckoutPage() {
       return;
     }
     let cancelled = false;
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- marks the start of an async fetch triggered by this effect, not a derived-state anti-pattern
     setShippingLoading(true);
     api
       .post<{ shipping: number }>("/api/orders/shipping-rate", { items: buildOrderItems(), addressId })
@@ -114,18 +125,6 @@ export default function CheckoutPage() {
     setCouponInput("");
     setCouponError(null);
   };
-
-  const buildOrderItems = () =>
-    cart.map((line) => ({
-      productId: line.product.id,
-      variantId: line.variant?.id,
-      name: line.product.name,
-      variantLabel: line.variant
-        ? line.variant.weightLabel ?? [line.variant.size, line.variant.color?.name].filter(Boolean).join(" / ")
-        : undefined,
-      price: line.variant?.price ?? line.product.price,
-      quantity: line.quantity,
-    }));
 
   const finalizeOrder = async (razorpayFields?: {
     razorpay_order_id: string;
