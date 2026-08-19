@@ -20,6 +20,13 @@ export type Shipment = {
   status: string;
 };
 
+export type AddressSnapshot = {
+  name: string;
+  line: string;
+  city: string;
+  phone: string;
+};
+
 export type Order = {
   id: string;
   status: string;
@@ -31,6 +38,7 @@ export type Order = {
   paymentMethod: string;
   trackingId: string | null; // legacy — prefer `shipments` below, which supports multi-warehouse orders
   shipments: Shipment[];
+  addressSnapshot: AddressSnapshot;
   cancelledAt: string | null;
   cancellationReason: string | null;
   createdAt: string;
