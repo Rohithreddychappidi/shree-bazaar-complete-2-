@@ -61,11 +61,20 @@ async function createShiprocketShipment({ orderId, createdAt, addressSnapshot, i
   }));
   const subTotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
 
+  // Shiprocket requires billing_customer_name (first name) and billing_last_name as
+  // separate fields — sending the full name only in billing_customer_name causes a
+  // "billing_last_name: validation.present" error since the field is then missing
+  // entirely, not just empty.
+  const nameParts = (address.name || "").trim().split(/\s+/).filter(Boolean);
+  const firstName = nameParts[0] || "Customer";
+  const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : firstName;
+
   const payload = {
     order_id: shipmentSuffix ? `${orderId}-${shipmentSuffix}` : orderId,
     order_date: new Date(createdAt).toISOString().slice(0, 19).replace("T", " "),
     pickup_location: pickupLocation,
-    billing_customer_name: address.name,
+    billing_customer_name: firstName,
+    billing_last_name: lastName,
     billing_address: address.line,
     billing_city: address.city,
     billing_pincode: extractPincode(address),
@@ -143,4 +152,18 @@ async function checkServiceability({ pickupPincode, deliveryPincode, weightKg, c
   return { available: true, rate: Math.ceil(cheapest.rate), courierName: cheapest.courier_name };
 }
 
-module.exports = { createShiprocketShipment, groupItemsByPickupLocation, trackShipment, checkServiceability, calculateWeightKg, extractPincode };
+// Cancels a shipment on Shiprocket's side too — not just in our own DB. Shiprocket's
+// cancel endpoint takes an array of THEIR order IDs (the shiprocketOrderId returned when
+// the shipment was created), not our own order id. Safe to call even if Shiprocket never
+// successfully created a shipment for this order in the first place (nothing to cancel
+// there) — callers should skip calling this in that case rather than erroring.
+async function cancelShipment(shiprocketOrderId) {
+  const token = await getToken();
+  await axios.post(
+    `${BASE_URL}/orders/cancel`,
+    { ids: [shiprocketOrderId] },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+}
+
+module.exports = { createShiprocketShipment, groupItemsByPickupLocation, trackShipment, checkServiceability, calculateWeightKg, extractPincode, cancelShipment };

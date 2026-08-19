@@ -2,7 +2,7 @@ const express = require("express");
 const crypto = require("crypto");
 const prisma = require("../config/prisma");
 const razorpay = require("../config/razorpay");
-const { createShiprocketShipment, groupItemsByPickupLocation, checkServiceability, calculateWeightKg, extractPincode } = require("../config/shiprocket");
+const { createShiprocketShipment, groupItemsByPickupLocation, checkServiceability, calculateWeightKg, extractPincode, cancelShipment } = require("../config/shiprocket");
 const { notifyOrderPlaced, notifyOrderCancelled } = require("../config/whatsapp");
 const { requireAuth, requireAdmin } = require("../middleware/auth");
 
@@ -318,7 +318,7 @@ router.get("/:id", async (req, res) => {
 // StoreSettings.cancellationWindowHours of the order being placed. Restocks every item.
 router.post("/:id/cancel", async (req, res) => {
   const { reason } = req.body;
-  const order = await prisma.order.findUnique({ where: { id: req.params.id }, include: { items: true } });
+  const order = await prisma.order.findUnique({ where: { id: req.params.id }, include: { items: true, shipments: true } });
   if (!order || order.userId !== req.user.id) return res.status(404).json({ error: "Order not found" });
 
   if (order.status === "Cancelled") {
@@ -358,6 +358,19 @@ router.post("/:id/cancel", async (req, res) => {
     where: { id: order.id },
     data: { status: "Cancelled", cancelledAt: new Date(), cancellationReason: reason ?? null },
   });
+
+  // Cancel on Shiprocket's side too, for every shipment that was actually created there.
+  // Never let a Shiprocket failure block the customer's cancellation — it already went
+  // through in our own DB above; this is best-effort and logged for admin follow-up.
+  for (const shipment of order.shipments) {
+    if (!shipment.shiprocketOrderId) continue;
+    try {
+      await cancelShipment(shipment.shiprocketOrderId);
+      await prisma.shipment.update({ where: { id: shipment.id }, data: { status: "Cancelled" } });
+    } catch (err) {
+      console.error(`Failed to cancel Shiprocket shipment ${shipment.shiprocketOrderId}:`, err.response?.data ?? err.message);
+    }
+  }
 
   const notifyPhone = req.user.whatsappNumber || req.user.phone;
   if (notifyPhone) notifyOrderCancelled(order, notifyPhone).catch(() => {});
