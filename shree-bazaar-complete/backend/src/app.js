@@ -23,9 +23,21 @@ const marketingRoutes = require("./routes/marketing.routes");
 
 const app = express();
 
+// FRONTEND_URL can be a single origin or a comma-separated list — needed because
+// browsers treat www.yourdomain.com and yourdomain.com as two different origins for
+// CORS purposes, even though they're "the same site" to a person visiting either.
+const allowedOrigins = (process.env.FRONTEND_URL || "")
+  .split(",")
+  .map((url) => url.trim())
+  .filter(Boolean);
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: (origin, callback) => {
+      // No Origin header (e.g. server-to-server requests, curl) — allow.
+      if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+      callback(new Error(`Origin ${origin} not allowed by CORS`));
+    },
     credentials: true, // required so the httpOnly auth cookie is sent/received
   })
 );
