@@ -11,6 +11,34 @@
   --font-sans: "Inter", sans-serif;
 }
 
+/* Alternate brand color options for client review — see ThemeSwitcher.tsx. Every
+   existing purple-* utility class site-wide reads from these same variables, so
+   overriding them here re-themes the whole app with zero component changes. */
+html[data-theme="gold"] {
+  --color-purple-50: #FBF6E9;
+  --color-purple-100: #F5EACB;
+  --color-purple-400: #D4AF37;
+  --color-purple-500: #C9A227;
+  --color-purple-700: #96751A;
+  --color-purple-800: #7A5D15;
+}
+html[data-theme="black"] {
+  --color-purple-50: #F4F4F5;
+  --color-purple-100: #E4E4E7;
+  --color-purple-400: #52525B;
+  --color-purple-500: #3F3F46;
+  --color-purple-700: #18181B;
+  --color-purple-800: #09090B;
+}
+html[data-theme="yellow"] {
+  --color-purple-50: #FFFBEB;
+  --color-purple-100: #FEF3C7;
+  --color-purple-400: #FBBF24;
+  --color-purple-500: #F59E0B;
+  --color-purple-700: #92620A;
+  --color-purple-800: #78500A;
+}
+
 body {
   background: #F8F8FC;
   color: #111827;
