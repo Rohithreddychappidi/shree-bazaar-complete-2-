@@ -63,7 +63,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside className="fixed inset-y-0 left-0 z-40 w-[240px] border-r border-[#ECEAF5] bg-[#1B1030] text-white">
         <div className="border-b border-white/10 px-6 py-5">
           <div className="font-display text-xl font-extrabold text-white">
-            Shree<span className="text-purple-400">Bazaar</span>
+            Shop<span className="text-purple-400">Hemu</span>
           </div>
           <div className="mt-0.5 text-[11px] tracking-widest text-white/50 uppercase">
             {user.role === "SUB_ADMIN" ? "Sub-Admin" : "Admin Panel"}

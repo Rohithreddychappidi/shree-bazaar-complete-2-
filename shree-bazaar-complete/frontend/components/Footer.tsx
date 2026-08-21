@@ -48,7 +48,7 @@ export default function Footer() {
     <footer className="mt-[70px] bg-[#1B1030] text-[#D9D2EE]">
       <div className="mx-auto grid max-w-[1280px] grid-cols-1 gap-8 px-6 py-[52px] sm:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1.3fr]">
         <div>
-          <div className="mb-3 font-display text-[22px] font-extrabold text-white">Shop Hemu</div>
+          <div className="mb-3 font-display text-[26px] font-extrabold text-white">Shop Hemu</div>
           <p className="mb-4 text-[13px] leading-relaxed opacity-75">
             Traditional food, fashion, pooja essentials and gifting — brought to your doorstep with the care of home.
           </p>

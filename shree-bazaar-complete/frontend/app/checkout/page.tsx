@@ -171,7 +171,7 @@ export default function CheckoutPage() {
         amount: rp.amount,
         currency: rp.currency,
         order_id: rp.orderId,
-        name: "Shree Bazaar",
+        name: "Shop Hemu",
         description: `Order for ${cart.length} item${cart.length > 1 ? "s" : ""}`,
         theme: { color: "#6D28D9" },
         handler: async (response: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) => {

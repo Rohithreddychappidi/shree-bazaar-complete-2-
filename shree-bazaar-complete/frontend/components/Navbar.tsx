@@ -49,9 +49,9 @@ export default function Navbar() {
 
       <div className="border-b border-[#ECEAF5]">
         <div className="mx-auto flex max-w-[1280px] items-center gap-6 px-6 py-3.5">
-          <Link href="/" className="shrink-0 font-display text-2xl font-extrabold text-purple-700">
+          <Link href="/" className="shrink-0 font-display text-3xl font-extrabold text-purple-700">
             Shop
-            <span className="block -mt-1 text-[11px] font-semibold tracking-[2px] text-gray-900 uppercase">Hemu</span>
+            <span className="block -mt-1 text-sm font-semibold tracking-[2px] text-gray-900 uppercase">Hemu</span>
           </Link>
 
           <SearchBar className="hidden max-w-[560px] flex-1 md:flex" value={query} onChange={setQuery} onSubmit={handleSearch} />
@@ -70,21 +70,23 @@ export default function Navbar() {
                   )}
                   {user.name?.split(" ")[0] ?? "Account"}
                 </button>
+                {/* invisible padding bridge (not margin) keeps this hoverable area contiguous
+                    with the trigger button — no dead zone for the cursor to cross */}
                 <div className="invisible absolute right-0 top-full z-10 w-44 pt-1 opacity-0 transition-opacity group-hover:visible group-hover:opacity-100">
-  <div className="rounded-xl border border-[#EFEDF8] bg-white p-2 shadow-lg">
-    <Link href="/profile" className="block rounded-lg px-3 py-2 text-[13px] text-gray-700 hover:bg-purple-50">
-      My Profile
-    </Link>
-    {user.role === "ADMIN" && (
-      <Link href="/admin" className="block rounded-lg px-3 py-2 text-[13px] text-gray-700 hover:bg-purple-50">
-        Admin Panel
-      </Link>
-    )}
-    <button onClick={() => logout()} className="flex w-full items-center gap-1.5 rounded-lg px-3 py-2 text-left text-[13px] text-red-500 hover:bg-red-50">
-      <LogOut size={13} /> Log out
-    </button>
-  </div>
-</div>
+                  <div className="rounded-xl border border-[#EFEDF8] bg-white p-2 shadow-lg">
+                    <Link href="/profile" className="block rounded-lg px-3 py-2 text-[13px] text-gray-700 hover:bg-purple-50">
+                      My Profile
+                    </Link>
+                    {user.role === "ADMIN" && (
+                      <Link href="/admin" className="block rounded-lg px-3 py-2 text-[13px] text-gray-700 hover:bg-purple-50">
+                        Admin Panel
+                      </Link>
+                    )}
+                    <button onClick={() => logout()} className="flex w-full items-center gap-1.5 rounded-lg px-3 py-2 text-left text-[13px] text-red-500 hover:bg-red-50">
+                      <LogOut size={13} /> Log out
+                    </button>
+                  </div>
+                </div>
               </div>
             ) : (
               <Link href="/login" className="hidden flex-col items-center gap-0.5 text-[11.5px] text-gray-500 hover:text-purple-700 sm:flex">
