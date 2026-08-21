@@ -21,12 +21,15 @@ export default function ThemeSwitcher() {
     const alreadyEnabled = localStorage.getItem("theme-preview-enabled") === "1";
     if (params.has("preview-theme")) {
       localStorage.setItem("theme-preview-enabled", "1");
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- reading a one-time flag from the URL/localStorage on mount, not a derived-state anti-pattern
       setEnabled(true);
     } else if (alreadyEnabled) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- reading a one-time flag from localStorage on mount, not a derived-state anti-pattern
       setEnabled(true);
     }
 
     const saved = localStorage.getItem("preview-theme") || "purple";
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- reading the saved preview theme from localStorage on mount, not a derived-state anti-pattern
     setTheme(saved);
     document.documentElement.setAttribute("data-theme", saved);
   }, []);

@@ -12,6 +12,7 @@ export default function IntroSplash() {
   useEffect(() => {
     if (sessionStorage.getItem("intro-shown")) return;
     sessionStorage.setItem("intro-shown", "1");
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time trigger reading sessionStorage on mount, not a derived-state anti-pattern
     setPhase("visible");
 
     const exitTimer = setTimeout(() => setPhase("exiting"), 1400);
