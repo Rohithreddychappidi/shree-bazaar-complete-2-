@@ -119,6 +119,11 @@ export default function Navbar() {
         </div>
       </div>
 
+      {/* Mobile-only search row — always visible, not buried behind the hamburger menu */}
+      <div className="border-b border-[#ECEAF5] px-6 py-3 md:hidden">
+        <SearchBar value={query} onChange={setQuery} onSubmit={handleSearch} />
+      </div>
+
       <nav className="hidden border-b border-[#ECEAF5] md:block">
         <div className="mx-auto flex max-w-[1280px] gap-7 overflow-x-auto px-6 py-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {navLinks.map((l) => (
@@ -136,7 +141,6 @@ export default function Navbar() {
 
       {mobileOpen && (
         <div className="border-t border-[#ECEAF5] bg-white px-6 py-4 md:hidden">
-          <SearchBar className="mb-4" value={query} onChange={setQuery} onSubmit={handleSearch} />
           <div className="flex flex-col gap-3">
             {navLinks.map((l) => (
               <Link key={l.href} href={l.href} onClick={() => setMobileOpen(false)} className="text-sm font-medium text-gray-900">
