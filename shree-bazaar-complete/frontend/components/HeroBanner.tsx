@@ -39,7 +39,7 @@ export default function HeroBanner() {
             <SwiperSlide key={slide.id}>
               <div className="relative flex h-full items-center">
                 <Image src={slide.image} alt={slide.title} fill priority className="object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-r from-[rgba(30,10,60,0.65)] via-[rgba(30,10,60,0.32)] to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[rgba(18,38,29,0.5)] via-[rgba(18,38,29,0.22)] to-transparent" />
                 <div className="relative z-10 max-w-[480px] px-8 text-white sm:px-14">
                   <div className="mb-2.5 text-xs font-semibold tracking-[2px] uppercase opacity-85">{slide.eyebrow}</div>
                   <h2 className="mb-3.5 text-2xl leading-tight font-bold sm:text-4xl">{slide.title}</h2>
