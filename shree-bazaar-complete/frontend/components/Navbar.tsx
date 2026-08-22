@@ -59,7 +59,7 @@ export default function Navbar() {
           <div className="ml-auto flex shrink-0 items-center gap-5">
             {user ? (
               <div className="group relative hidden sm:block">
-                <button className="flex flex-col items-center gap-0.5 text-[11.5px] text-gray-500 hover:text-purple-700">
+                <button className="flex flex-col items-center gap-0.5 text-[11.5px] text-surface-fg/80 hover:text-purple-700">
                   {user.avatarUrl ? (
                     <span className="relative block h-[22px] w-[22px] overflow-hidden rounded-full">
                       {/* eslint-disable-next-line @next/next/no-img-element -- small avatar, external Google URL, no LCP concern */}
@@ -89,12 +89,12 @@ export default function Navbar() {
                 </div>
               </div>
             ) : (
-              <Link href="/login" className="hidden flex-col items-center gap-0.5 text-[11.5px] text-gray-500 hover:text-purple-700 sm:flex">
+              <Link href="/login" className="hidden flex-col items-center gap-0.5 text-[11.5px] text-surface-fg/80 hover:text-purple-700 sm:flex">
                 <User size={22} />
                 Account
               </Link>
             )}
-            <Link href="/wishlist" className="relative hidden flex-col items-center gap-0.5 text-[11.5px] text-gray-500 hover:text-purple-700 sm:flex">
+            <Link href="/wishlist" className="relative hidden flex-col items-center gap-0.5 text-[11.5px] text-surface-fg/80 hover:text-purple-700 sm:flex">
               <Heart size={22} />
               Wishlist
               {wishlist.length > 0 && (
@@ -103,7 +103,7 @@ export default function Navbar() {
                 </span>
               )}
             </Link>
-            <Link href="/cart" className="relative flex flex-col items-center gap-0.5 text-[11.5px] text-gray-500 hover:text-purple-700">
+            <Link href="/cart" className="relative flex flex-col items-center gap-0.5 text-[11.5px] text-surface-fg/80 hover:text-purple-700">
               <ShoppingCart size={22} />
               Cart
               {cartCount > 0 && (
@@ -112,7 +112,7 @@ export default function Navbar() {
                 </span>
               )}
             </Link>
-            <button className="md:hidden" onClick={() => setMobileOpen((v) => !v)} aria-label="Menu">
+            <button className="text-surface-fg md:hidden" onClick={() => setMobileOpen((v) => !v)} aria-label="Menu">
               {mobileOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
@@ -127,12 +127,12 @@ export default function Navbar() {
       <nav className="hidden border-b border-[#ECEAF5] md:block">
         <div className="mx-auto flex max-w-[1280px] gap-7 overflow-x-auto px-6 py-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {navLinks.map((l) => (
-            <Link key={l.href} href={l.href} className="border-b-2 border-transparent pb-0.5 text-[13.5px] font-medium whitespace-nowrap text-gray-900 transition-colors hover:border-purple-400 hover:text-purple-700">
+            <Link key={l.href} href={l.href} className="border-b-2 border-transparent pb-0.5 text-[13.5px] font-medium whitespace-nowrap text-surface-fg transition-colors hover:border-purple-400 hover:text-purple-700">
               {l.label}
             </Link>
           ))}
           {categories.slice(0, 8).map((c) => (
-            <Link key={c.slug} href={`/products?category=${c.slug}`} className="border-b-2 border-transparent pb-0.5 text-[13.5px] font-medium whitespace-nowrap text-gray-900 transition-colors hover:border-purple-400 hover:text-purple-700">
+            <Link key={c.slug} href={`/products?category=${c.slug}`} className="border-b-2 border-transparent pb-0.5 text-[13.5px] font-medium whitespace-nowrap text-surface-fg transition-colors hover:border-purple-400 hover:text-purple-700">
               {c.name}
             </Link>
           ))}
