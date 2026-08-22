@@ -7,7 +7,6 @@ import { AdminDataProvider } from "@/lib/admin-data-context";
 import { AuthProvider } from "@/lib/auth-context";
 import ProfileCompletionPrompt from "@/components/ProfileCompletionPrompt";
 import IntroSplash from "@/components/IntroSplash";
-import ThemeSwitcher from "@/components/ThemeSwitcher";
 
 export const metadata: Metadata = {
   title: "Shop Hemu | Traditional Food, Fashion & Gifting",
@@ -27,7 +26,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="antialiased">
         <IntroSplash />
-        <ThemeSwitcher />
         <AuthProvider>
           <AdminDataProvider>
             <StoreProvider>

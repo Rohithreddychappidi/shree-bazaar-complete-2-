@@ -1,71 +1,6 @@
 @import "tailwindcss";
 
 @theme {
-  --color-purple-50: #F3F0FF;
-  --color-purple-100: #EDE7FF;
-  --color-purple-400: #A78BFA;
-  --color-purple-500: #8B5CF6;
-  --color-purple-700: #6D28D9;
-  --color-purple-800: #5B21B6;
-  --color-surface: #FFFFFF;
-  --color-surface-fg: #111827;
-  --color-surface-muted: var(--color-purple-50);
-  --font-display: "Outfit", sans-serif;
-  --font-sans: "Inter", sans-serif;
-}
-
-/* Alternate brand color options for client review — see ThemeSwitcher.tsx. Every
-   existing purple-* utility class site-wide reads from these same variables, so
-   overriding them here re-themes the whole app with zero component changes. */
-html[data-theme="gold"] {
-  --color-purple-50: #FBF6E9;
-  --color-purple-100: #F5EACB;
-  --color-purple-400: #D4AF37;
-  --color-purple-500: #C9A227;
-  --color-purple-700: #96751A;
-  --color-purple-800: #7A5D15;
-}
-html[data-theme="black"] {
-  --color-purple-50: #F4F4F5;
-  --color-purple-100: #E4E4E7;
-  --color-purple-400: #52525B;
-  --color-purple-500: #3F3F46;
-  --color-purple-700: #18181B;
-  --color-purple-800: #09090B;
-}
-html[data-theme="yellow"] {
-  --color-purple-50: #FFFBEB;
-  --color-purple-100: #FEF3C7;
-  --color-purple-400: #FBBF24;
-  --color-purple-500: #F59E0B;
-  --color-purple-700: #92620A;
-  --color-purple-800: #78500A;
-}
-html[data-theme="light-yellow"] {
-  --color-purple-50: #FFFDF0;
-  --color-purple-100: #FFF9D6;
-  --color-purple-400: #FDE047;
-  --color-purple-500: #FACC15;
-  --color-purple-700: #A9821C;
-  --color-purple-800: #8A6A17;
-}
-html[data-theme="violet"] {
-  --color-purple-50: #FAF5FF;
-  --color-purple-100: #F3E8FF;
-  --color-purple-400: #C084FC;
-  --color-purple-500: #A855F7;
-  --color-purple-700: #7E22CE;
-  --color-purple-800: #6B21A8;
-}
-html[data-theme="orange"] {
-  --color-purple-50: #FFF7ED;
-  --color-purple-100: #FFEDD5;
-  --color-purple-400: #FB923C;
-  --color-purple-500: #F97316;
-  --color-purple-700: #C2410C;
-  --color-purple-800: #9A3412;
-}
-html[data-theme="heritage"] {
   --color-purple-50: #FBF3DC;
   --color-purple-100: #F4E3B0;
   --color-purple-400: #D4AF37;
@@ -76,6 +11,7 @@ html[data-theme="heritage"] {
   --color-surface-fg: #F4E3B0;
   --color-surface-muted: #1B3327;
   --font-display: "Playfair Display", serif;
+  --font-sans: "Inter", sans-serif;
 }
 
 body {
