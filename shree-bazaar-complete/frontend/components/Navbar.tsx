@@ -5,6 +5,7 @@ import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { User, Heart, ShoppingCart, Menu, X, LogOut } from "lucide-react";
 import SearchBar from "./SearchBar";
+import LogoMark from "./LogoMark";
 import { useAdminData } from "@/lib/admin-data-context";
 import { useStore } from "@/lib/store-context";
 import { useAuth } from "@/lib/auth-context";
@@ -49,9 +50,12 @@ export default function Navbar() {
 
       <div className="border-b border-[#ECEAF5]">
         <div className="mx-auto flex max-w-[1280px] items-center gap-6 px-6 py-3.5">
-          <Link href="/" className="shrink-0 font-display text-3xl font-extrabold text-purple-700">
-            Shop
-            <span className="block -mt-1 text-sm font-semibold tracking-[2px] text-surface-fg uppercase">Hemu</span>
+          <Link href="/" className="flex shrink-0 items-center gap-3 text-purple-700">
+            <LogoMark className="h-11 w-11 shrink-0" />
+            <span className="flex flex-col leading-none">
+              <span className="font-display text-2xl font-extrabold tracking-wide text-surface-fg uppercase">Shophemu</span>
+              <span className="mt-1.5 text-[10px] font-semibold tracking-[2px] text-purple-700 uppercase">Shop Everything, Live Better</span>
+            </span>
           </Link>
 
           <SearchBar className="hidden max-w-[560px] flex-1 md:flex" value={query} onChange={setQuery} onSubmit={handleSearch} />
