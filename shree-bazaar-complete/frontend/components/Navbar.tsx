@@ -35,7 +35,7 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white">
+    <header className="sticky top-0 z-50 bg-surface">
       {settings?.announcementEnabled && settings.announcementText && (
         <div className="overflow-hidden bg-purple-700 py-1.5 text-[12.5px] text-white">
           <div className="animate-marquee whitespace-nowrap">
@@ -51,7 +51,7 @@ export default function Navbar() {
         <div className="mx-auto flex max-w-[1280px] items-center gap-6 px-6 py-3.5">
           <Link href="/" className="shrink-0 font-display text-3xl font-extrabold text-purple-700">
             Shop
-            <span className="block -mt-1 text-sm font-semibold tracking-[2px] text-gray-900 uppercase">Hemu</span>
+            <span className="block -mt-1 text-sm font-semibold tracking-[2px] text-surface-fg uppercase">Hemu</span>
           </Link>
 
           <SearchBar className="hidden max-w-[560px] flex-1 md:flex" value={query} onChange={setQuery} onSubmit={handleSearch} />

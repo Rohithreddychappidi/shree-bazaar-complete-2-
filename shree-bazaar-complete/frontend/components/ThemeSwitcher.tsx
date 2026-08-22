@@ -7,6 +7,10 @@ const THEMES = [
   { id: "gold", label: "Gold", swatch: "#96751A" },
   { id: "black", label: "Black", swatch: "#18181B" },
   { id: "yellow", label: "Yellow", swatch: "#92620A" },
+  { id: "light-yellow", label: "Light Yellow", swatch: "#A9821C" },
+  { id: "violet", label: "Violet", swatch: "#7E22CE" },
+  { id: "orange", label: "Orange", swatch: "#C2410C" },
+  { id: "heritage", label: "Heritage", swatch: "#12261D" },
 ];
 
 // Visit the site with ?preview-theme=1 once — after that it stays enabled in this
@@ -43,8 +47,8 @@ export default function ThemeSwitcher() {
   };
 
   return (
-    <div className="fixed bottom-5 right-5 z-[200] flex items-center gap-2 rounded-full border border-[#EFEDF8] bg-white px-3 py-2 shadow-lg">
-      <span className="mr-1 text-[11px] font-medium text-gray-500">Preview:</span>
+    <div className="fixed bottom-5 right-5 z-[200] flex max-w-[190px] flex-wrap items-center gap-2 rounded-2xl border border-[#EFEDF8] bg-white px-3 py-2.5 shadow-lg sm:max-w-none sm:flex-nowrap sm:rounded-full">
+      <span className="mb-1 w-full text-[11px] font-medium text-gray-500 sm:mb-0 sm:w-auto sm:mr-1">Preview:</span>
       {THEMES.map((t) => (
         <button
           key={t.id}
