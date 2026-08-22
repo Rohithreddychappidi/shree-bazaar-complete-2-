@@ -49,18 +49,18 @@ export default function Navbar() {
       )}
 
       <div className="border-b border-[#ECEAF5]">
-        <div className="mx-auto flex max-w-[1280px] items-center gap-6 px-6 py-3.5">
-          <Link href="/" className="flex shrink-0 items-center gap-3 text-purple-700">
-            <LogoMark className="h-11 w-11 shrink-0" />
+        <div className="mx-auto flex max-w-[1280px] items-center gap-3 px-4 py-3 sm:gap-6 sm:px-6 sm:py-3.5">
+          <Link href="/" className="flex shrink-0 items-center gap-2 text-purple-700 sm:gap-3">
+            <LogoMark className="h-8 w-8 shrink-0 sm:h-11 sm:w-11" />
             <span className="flex flex-col leading-none">
-              <span className="font-display text-2xl font-extrabold tracking-wide text-surface-fg uppercase">Shophemu</span>
-              <span className="mt-1.5 text-[10px] font-semibold tracking-[2px] text-purple-700 uppercase">Shop Everything, Live Better</span>
+              <span className="font-display text-base font-extrabold tracking-normal text-surface-fg uppercase sm:text-2xl sm:tracking-wide">Shophemu</span>
+              <span className="mt-1 text-[8px] font-semibold tracking-[1px] text-purple-700 uppercase sm:mt-1.5 sm:text-[10px] sm:tracking-[2px]">Shop Everything, Live Better</span>
             </span>
           </Link>
 
           <SearchBar className="hidden max-w-[560px] flex-1 md:flex" value={query} onChange={setQuery} onSubmit={handleSearch} />
 
-          <div className="ml-auto flex shrink-0 items-center gap-5">
+          <div className="ml-auto flex shrink-0 items-center gap-3 sm:gap-5">
             {user ? (
               <div className="group relative hidden sm:block">
                 <button className="flex flex-col items-center gap-0.5 text-[11.5px] text-surface-fg/80 hover:text-purple-700">
