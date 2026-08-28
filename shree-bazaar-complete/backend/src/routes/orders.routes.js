@@ -318,7 +318,10 @@ router.get("/:id", async (req, res) => {
 // StoreSettings.cancellationWindowHours of the order being placed. Restocks every item.
 router.post("/:id/cancel", async (req, res) => {
   const { reason } = req.body;
-  const order = await prisma.order.findUnique({ where: { id: req.params.id }, include: { items: true, shipments: true } });
+  const order = await prisma.order.findUnique({
+    where: { id: req.params.id },
+    include: { items: { include: { product: true } }, shipments: true },
+  });
   if (!order || order.userId !== req.user.id) return res.status(404).json({ error: "Order not found" });
 
   if (order.status === "Cancelled") {
@@ -326,6 +329,9 @@ router.post("/:id/cancel", async (req, res) => {
   }
   if (order.status === "Delivered") {
     return res.status(400).json({ error: "This order has already been delivered and can no longer be cancelled." });
+  }
+  if (order.items.some((item) => item.product?.noReturn)) {
+    return res.status(400).json({ error: "This order contains a non-returnable item and cannot be cancelled." });
   }
 
   const settings = await prisma.storeSettings.findUnique({ where: { id: "default" } });

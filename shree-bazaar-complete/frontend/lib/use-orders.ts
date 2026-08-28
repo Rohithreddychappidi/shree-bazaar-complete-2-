@@ -10,6 +10,7 @@ export type OrderItem = {
   variantLabel: string | null;
   price: number;
   quantity: number;
+  product?: { id: string; noReturn: boolean } | null;
 };
 
 export type Shipment = {

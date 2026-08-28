@@ -5,11 +5,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { Plus, Pencil, Trash2, Search } from "lucide-react";
 import { useAdminData } from "@/lib/admin-data-context";
+import { useAuth } from "@/lib/auth-context";
 
 export default function AdminProductsPage() {
-  const { products, categories, deleteProduct } = useAdminData();
+  const { products: allProducts, categories, deleteProduct } = useAdminData();
+  const { user } = useAuth();
   const [query, setQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
+
+  // Sub-admins only manage products they personally added — admin sees the full catalog.
+  const products = user?.role === "SUB_ADMIN" ? allProducts.filter((p) => p.createdById === user.id) : allProducts;
 
   const filtered = useMemo(() => {
     return products.filter((p) => {

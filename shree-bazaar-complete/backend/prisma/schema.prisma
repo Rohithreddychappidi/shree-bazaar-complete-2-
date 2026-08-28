@@ -83,6 +83,9 @@ model Product {
                                 // calculation and shipment creation. Only used directly for
                                 // variantType "none" — variant products use ProductVariant.weightKg
                                 // (falling back to this value if a variant doesn't override it).
+  noReturn         Boolean     @default(false) // if true: no returns AND the customer's order
+                                // cancel option is hidden for any order containing this product
+                                // (e.g. perishable/food items that can't practically be reversed)
   outOfStockSince  DateTime?   // set the moment stock (or every variant's stock) hits 0;
                                 // cleared on restock. Products stay visible with an "Out of
                                 // Stock" label for 24h from this timestamp, then are hidden

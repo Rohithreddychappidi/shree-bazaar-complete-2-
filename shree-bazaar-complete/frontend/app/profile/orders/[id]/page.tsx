@@ -31,7 +31,9 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
   const windowHours = settings?.cancellationWindowHours ?? 8;
   const hoursSinceOrder = order && now ? (now - new Date(order.createdAt).getTime()) / (1000 * 60 * 60) : 0;
   const withinWindow = now !== null && hoursSinceOrder <= windowHours;
-  const canCancel = order && now !== null && order.status !== "Delivered" && order.status !== "Cancelled" && withinWindow;
+  const hasNoReturnItem = order?.items.some((item) => item.product?.noReturn) ?? false;
+  const canCancel =
+    order && now !== null && order.status !== "Delivered" && order.status !== "Cancelled" && withinWindow && !hasNoReturnItem;
 
   const handleCancel = async () => {
     setCancelling(true);
@@ -130,8 +132,8 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
         )}
       </div>
 
-      {/* Cancellation */}
-      {order.status !== "Cancelled" && order.status !== "Delivered" && (
+      {/* Cancellation — entirely hidden (not just disabled) for non-returnable items */}
+      {order.status !== "Cancelled" && order.status !== "Delivered" && !hasNoReturnItem && (
         <div className="rounded-2xl border border-[#EFEDF8] bg-white p-6">
           {canCancel ? (
             <>

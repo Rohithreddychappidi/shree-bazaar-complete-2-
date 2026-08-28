@@ -4,7 +4,7 @@ import { use, useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Heart, ShoppingCart, Minus, Plus, ChevronRight, Truck, ShieldCheck, Tag, Ruler } from "lucide-react";
+import { Heart, ShoppingCart, Minus, Plus, ChevronRight, Truck, ShieldCheck, Tag, Ruler, Ban } from "lucide-react";
 import { useAdminData } from "@/lib/admin-data-context";
 import { useStore } from "@/lib/store-context";
 import { useSettings } from "@/lib/use-settings";
@@ -183,9 +183,17 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
             )}
           </div>
 
-          <div className="mb-6 inline-flex items-center gap-2 rounded-lg bg-purple-50 px-3 py-1.5">
-            <Truck size={15} className="text-purple-700" />
-            <span className="text-[12.5px] font-semibold text-purple-700">Delivery by Shiprocket</span>
+          <div className="mb-6 flex flex-wrap gap-2">
+            <div className="inline-flex items-center gap-2 rounded-lg bg-purple-50 px-3 py-1.5">
+              <Truck size={15} className="text-purple-700" />
+              <span className="text-[12.5px] font-semibold text-purple-700">Delivery by Shiprocket</span>
+            </div>
+            {product.noReturn && (
+              <div className="inline-flex items-center gap-2 rounded-lg bg-red-50 px-3 py-1.5">
+                <Ban size={15} className="text-red-600" />
+                <span className="text-[12.5px] font-semibold text-red-600">No Return / No Cancellation</span>
+              </div>
+            )}
           </div>
 
           {/* Size selector (fashion) */}

@@ -42,6 +42,9 @@ export type Product = {
   stock?: number | null; // only meaningful for variantType "none" — null means untracked/always orderable
   outOfStockSince?: string | null;
   pickupLocation?: string | null; // falls back to the store's default pickup location if unset
+  createdById?: string | null; // which staff member added this product — used to scope sub-admins
+                                 // to only their own products in /admin/products and /admin/my-orders
+  noReturn?: boolean; // no returns and no order-cancellation for this product
   weightKg?: number; // package weight in kg, used for live Shiprocket shipping-rate calculation
                       // and actual shipment creation — used directly for variantType "none",
                       // and as the fallback default for variant products without their own override

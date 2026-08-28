@@ -35,6 +35,7 @@ export default function ProductForm({ existing }: { existing?: Product }) {
   const [tag, setTag] = useState<Product["tag"] | "">(existing?.tag ?? "");
   const [stock, setStock] = useState(existing?.stock != null ? String(existing.stock) : "");
   const [weightKg, setWeightKg] = useState(existing?.weightKg != null ? String(existing.weightKg) : "0.3");
+  const [noReturn, setNoReturn] = useState(existing?.noReturn ?? false);
   const [pickupLocation, setPickupLocation] = useState(existing?.pickupLocation ?? "");
   const [images, setImages] = useState<string[]>(existing?.images ?? []);
   const [uploading, setUploading] = useState(false);
@@ -203,6 +204,7 @@ export default function ProductForm({ existing }: { existing?: Product }) {
       stock: variantType === "none" ? (stock === "" ? null : Number(stock)) : undefined,
       pickupLocation: pickupLocation || null,
       weightKg: weightKg === "" ? 0.3 : Math.max(0.05, Number(weightKg) || 0.3),
+      noReturn,
     };
 
     setSaving(true);
@@ -388,6 +390,30 @@ export default function ProductForm({ existing }: { existing?: Product }) {
             Shiprocket when the shipment is created. Include reasonable packaging weight, not just the product
             itself.
           </p>
+        </div>
+
+        <div className="mt-4 flex items-center justify-between rounded-xl border border-[#E7E4F4] bg-[#F8F8FC] px-4 py-3 max-w-[420px]">
+          <div>
+            <label htmlFor="no-return-toggle" className="block text-[13px] font-medium text-gray-700">
+              No Return / No Cancellation
+            </label>
+            <p className="mt-0.5 text-[11.5px] text-gray-400">
+              For perishable or non-reversible items. Shows a &quot;No Return&quot; notice on the product page, and
+              hides the cancel option entirely for any order containing this product.
+            </p>
+          </div>
+          <button
+            id="no-return-toggle"
+            type="button"
+            role="switch"
+            aria-checked={noReturn}
+            onClick={() => setNoReturn((v) => !v)}
+            className={`ml-4 flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ${
+              noReturn ? "bg-purple-700" : "bg-gray-300"
+            }`}
+          >
+            <span className={`h-5 w-5 rounded-full bg-white shadow transition-transform ${noReturn ? "translate-x-5.5" : "translate-x-0.5"}`} />
+          </button>
         </div>
 
         {variantType === "size-color" && (

@@ -68,7 +68,7 @@ router.get("/:slug", async (req, res) => {
 
 // POST /api/products — admin only
 router.post("/", requireStaff, async (req, res) => {
-  const { name, brand, description, price, oldPrice, tag, categorySlug, images = [], variantType = "none", variants = [], sizeChart, stock, pickupLocation, weightKg } = req.body;
+  const { name, brand, description, price, oldPrice, tag, categorySlug, images = [], variantType = "none", variants = [], sizeChart, stock, pickupLocation, weightKg, noReturn } = req.body;
 
   const category = await prisma.category.findUnique({ where: { slug: categorySlug } });
   if (!category) return res.status(400).json({ error: "Invalid category" });
@@ -91,6 +91,7 @@ router.post("/", requireStaff, async (req, res) => {
         sizeChart: sizeChart ?? undefined,
         stock: parsedStock,
         weightKg: weightKg !== undefined && weightKg !== "" ? Math.max(0.05, Number(weightKg)) : 0.3,
+        noReturn: !!noReturn,
         outOfStockSince: parsedStock !== null && parsedStock <= 0 ? new Date() : null,
         pickupLocation: pickupLocation || null,
         createdById: req.user.id,
@@ -119,12 +120,19 @@ router.post("/", requireStaff, async (req, res) => {
 
 // PUT /api/products/:id — admin only (replaces variants wholesale for simplicity)
 router.put("/:id", requireStaff, async (req, res) => {
-  const { name, brand, description, price, oldPrice, tag, categorySlug, images, variantType, variants, sizeChart, stock, pickupLocation, weightKg } = req.body;
+  const existing = await prisma.product.findUnique({ where: { id: req.params.id } });
+  if (!existing) return res.status(404).json({ error: "Product not found" });
+  if (req.user.role === "SUB_ADMIN" && existing.createdById !== req.user.id) {
+    return res.status(403).json({ error: "You can only edit products you added yourself" });
+  }
+
+  const { name, brand, description, price, oldPrice, tag, categorySlug, images, variantType, variants, sizeChart, stock, pickupLocation, weightKg, noReturn } = req.body;
 
   const data = { name, brand, description, price, oldPrice, tag: tag || null };
   if (sizeChart !== undefined) data.sizeChart = sizeChart;
   if (pickupLocation !== undefined) data.pickupLocation = pickupLocation || null;
   if (weightKg !== undefined && weightKg !== "") data.weightKg = Math.max(0.05, Number(weightKg));
+  if (noReturn !== undefined) data.noReturn = !!noReturn;
   if (images) {
     data.images = images;
     data.image = images[0] ?? "";
@@ -181,6 +189,11 @@ router.put("/:id", requireStaff, async (req, res) => {
 
 // DELETE /api/products/:id — admin only
 router.delete("/:id", requireStaff, async (req, res) => {
+  const existing = await prisma.product.findUnique({ where: { id: req.params.id } });
+  if (!existing) return res.status(404).json({ error: "Product not found" });
+  if (req.user.role === "SUB_ADMIN" && existing.createdById !== req.user.id) {
+    return res.status(403).json({ error: "You can only delete products you added yourself" });
+  }
   try {
     await prisma.product.delete({ where: { id: req.params.id } });
     res.json({ ok: true });
