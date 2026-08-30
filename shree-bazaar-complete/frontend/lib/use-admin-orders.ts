@@ -44,3 +44,31 @@ export function useAdminOrders() {
 
   return { orders, loading, error, refresh, retryShiprocket };
 }
+
+// Admin-only single-order detail (GET /api/admin/orders/:id) — used by the order
+// detail page for the full address/contact/Razorpay-ID view needed for manual refunds.
+export function useAdminOrder(id: string) {
+  const [order, setOrder] = useState<AdminOrder | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    api
+      .get<AdminOrder>(`/api/admin/orders/${id}`)
+      .then((data) => {
+        if (!cancelled) setOrder(data);
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err instanceof Error ? err.message : "Failed to load order");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  return { order, loading, error };
+}

@@ -37,6 +37,8 @@ export type Order = {
   couponCode: string | null;
   total: number;
   paymentMethod: string;
+  razorpayOrderId?: string | null;
+  razorpayPaymentId?: string | null;
   trackingId: string | null; // legacy — prefer `shipments` below, which supports multi-warehouse orders
   shipments: Shipment[];
   addressSnapshot: AddressSnapshot;

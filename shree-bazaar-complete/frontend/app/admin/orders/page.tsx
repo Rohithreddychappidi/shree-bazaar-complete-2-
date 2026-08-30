@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Truck, Loader2, RefreshCw } from "lucide-react";
 import { useAdminOrders } from "@/lib/use-admin-orders";
 
@@ -39,6 +40,7 @@ export default function AdminOrdersPage() {
               <tr>
                 <th className="px-5 py-3 font-medium">Order</th>
                 <th className="px-5 py-3 font-medium">Customer</th>
+                <th className="px-5 py-3 font-medium">Delivery Address</th>
                 <th className="px-5 py-3 font-medium">Status</th>
                 <th className="px-5 py-3 font-medium">Shipments</th>
                 <th className="px-5 py-3 font-medium text-right">Total</th>
@@ -51,7 +53,9 @@ export default function AdminOrdersPage() {
                 return (
                   <tr key={o.id} className="border-t border-[#EFEDF8]">
                     <td className="px-5 py-3">
-                      <div className="font-semibold text-gray-900">#{o.id.slice(0, 8).toUpperCase()}</div>
+                      <Link href={`/admin/orders/${o.id}`} className="font-semibold text-gray-900 hover:text-purple-700 hover:underline">
+                        #{o.id.slice(0, 8).toUpperCase()}
+                      </Link>
                       <div className="text-[11.5px] text-gray-500">
                         {new Date(o.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
                       </div>
@@ -59,6 +63,14 @@ export default function AdminOrdersPage() {
                     <td className="px-5 py-3 text-gray-600">
                       <div>{o.user.name ?? "—"}</div>
                       <div className="text-[11.5px] text-gray-400">{o.user.email}</div>
+                      {o.user.phone && <div className="text-[11.5px] text-gray-400">{o.user.phone}</div>}
+                    </td>
+                    <td className="px-5 py-3 text-gray-600">
+                      <div className="max-w-[220px]">
+                        <div className="font-medium text-gray-800">{o.addressSnapshot.name}</div>
+                        <div className="text-[11.5px] text-gray-500">{o.addressSnapshot.line}, {o.addressSnapshot.city}</div>
+                        <div className="text-[11.5px] text-gray-400">{o.addressSnapshot.phone}</div>
+                      </div>
                     </td>
                     <td className="px-5 py-3">
                       <span
