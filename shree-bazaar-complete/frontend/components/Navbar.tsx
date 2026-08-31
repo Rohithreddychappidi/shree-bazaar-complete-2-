@@ -2,27 +2,17 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
-import { User, Heart, ShoppingCart, Menu, X, LogOut } from "lucide-react";
+import { useRouter, usePathname } from "next/navigation";
+import { User, Heart, ShoppingCart, LogOut } from "lucide-react";
 import SearchBar from "./SearchBar";
 import LogoMark from "./LogoMark";
-import { useAdminData } from "@/lib/admin-data-context";
 import { useStore } from "@/lib/store-context";
 import { useAuth } from "@/lib/auth-context";
 import { useSettings } from "@/lib/use-settings";
 
-const navLinks = [
-  { label: "Home", href: "/" },
-  { label: "Products", href: "/products" },
-  { label: "Services", href: "/services" },
-  { label: "About", href: "/about" },
-];
-
 export default function Navbar() {
-  const [mobileOpen, setMobileOpen] = useState(false);
   const [query, setQuery] = useState("");
   const { cartCount, wishlist } = useStore();
-  const { categories } = useAdminData();
   const { user, logout } = useAuth();
   const { settings } = useSettings();
   const pathname = usePathname();
@@ -53,16 +43,22 @@ export default function Navbar() {
           <Link href="/" className="flex shrink-0 items-center gap-2 text-purple-700 sm:gap-3">
             <LogoMark className="h-8 w-8 shrink-0 sm:h-11 sm:w-11" />
             <span className="flex flex-col leading-none">
-              <span className="font-display text-base font-extrabold tracking-normal text-surface-fg uppercase sm:text-2xl sm:tracking-wide">Shophemu</span>
-              <span className="mt-1 text-[8px] font-semibold tracking-[1px] text-purple-700 uppercase sm:mt-1.5 sm:text-[10px] sm:tracking-[2px]">Shop Everything, Live Better</span>
+              <span className="font-display text-base font-extrabold tracking-normal text-surface-fg uppercase sm:text-2xl sm:tracking-wide">
+                Shophemu
+              </span>
+              <span className="mt-1 text-[8px] font-semibold tracking-[1px] text-purple-700 uppercase sm:mt-1.5 sm:text-[10px] sm:tracking-[2px]">
+                Shop Everything, Live Better
+              </span>
             </span>
           </Link>
 
           <SearchBar className="hidden max-w-[560px] flex-1 md:flex" value={query} onChange={setQuery} onSubmit={handleSearch} />
 
-          <div className="ml-auto flex shrink-0 items-center gap-3 sm:gap-5">
+          {/* Account/Wishlist/Cart now live only in the top bar on desktop — mobile uses
+              the floating bottom nav instead, so nothing extra shows on the right on mobile. */}
+          <div className="ml-auto hidden shrink-0 items-center gap-5 md:flex">
             {user ? (
-              <div className="group relative hidden sm:block">
+              <div className="group relative">
                 <button className="flex flex-col items-center gap-0.5 text-[11.5px] text-surface-fg/80 hover:text-purple-700">
                   {user.avatarUrl ? (
                     <span className="relative block h-[22px] w-[22px] overflow-hidden rounded-full">
@@ -74,8 +70,6 @@ export default function Navbar() {
                   )}
                   {user.name?.split(" ")[0] ?? "Account"}
                 </button>
-                {/* invisible padding bridge (not margin) keeps this hoverable area contiguous
-                    with the trigger button — no dead zone for the cursor to cross */}
                 <div className="invisible absolute right-0 top-full z-10 w-44 pt-1 opacity-0 transition-opacity group-hover:visible group-hover:opacity-100">
                   <div className="rounded-xl border border-[#EFEDF8] bg-white p-2 shadow-lg">
                     <Link href="/profile" className="block rounded-lg px-3 py-2 text-[13px] text-gray-700 hover:bg-purple-50">
@@ -93,12 +87,12 @@ export default function Navbar() {
                 </div>
               </div>
             ) : (
-              <Link href="/login" className="hidden flex-col items-center gap-0.5 text-[11.5px] text-surface-fg/80 hover:text-purple-700 sm:flex">
+              <Link href="/login" className="flex flex-col items-center gap-0.5 text-[11.5px] text-surface-fg/80 hover:text-purple-700">
                 <User size={22} />
                 Account
               </Link>
             )}
-            <Link href="/wishlist" className="relative hidden flex-col items-center gap-0.5 text-[11.5px] text-surface-fg/80 hover:text-purple-700 sm:flex">
+            <Link href="/wishlist" className="relative flex flex-col items-center gap-0.5 text-[11.5px] text-surface-fg/80 hover:text-purple-700">
               <Heart size={22} />
               Wishlist
               {wishlist.length > 0 && (
@@ -116,57 +110,14 @@ export default function Navbar() {
                 </span>
               )}
             </Link>
-            <button className="text-surface-fg md:hidden" onClick={() => setMobileOpen((v) => !v)} aria-label="Menu">
-              {mobileOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile-only search row — always visible, not buried behind the hamburger menu */}
-      <div className="border-b border-[#ECEAF5] px-6 py-3 md:hidden">
+      {/* Mobile-only search row — always visible, no menu/dropdown needed to reach it */}
+      <div className="border-b border-[#ECEAF5] px-4 py-3 md:hidden">
         <SearchBar value={query} onChange={setQuery} onSubmit={handleSearch} />
       </div>
-
-      <nav className="hidden border-b border-[#ECEAF5] md:block">
-        <div className="mx-auto flex max-w-[1280px] gap-7 overflow-x-auto px-6 py-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {navLinks.map((l) => (
-            <Link key={l.href} href={l.href} className="border-b-2 border-transparent pb-0.5 text-[13.5px] font-medium whitespace-nowrap text-surface-fg transition-colors hover:border-purple-400 hover:text-purple-700">
-              {l.label}
-            </Link>
-          ))}
-          {categories.slice(0, 8).map((c) => (
-            <Link key={c.slug} href={`/products?category=${c.slug}`} className="border-b-2 border-transparent pb-0.5 text-[13.5px] font-medium whitespace-nowrap text-surface-fg transition-colors hover:border-purple-400 hover:text-purple-700">
-              {c.name}
-            </Link>
-          ))}
-        </div>
-      </nav>
-
-      {mobileOpen && (
-        <div className="border-t border-[#ECEAF5] bg-white px-6 py-4 md:hidden">
-          <div className="flex flex-col gap-3">
-            {navLinks.map((l) => (
-              <Link key={l.href} href={l.href} onClick={() => setMobileOpen(false)} className="text-sm font-medium text-gray-900">
-                {l.label}
-              </Link>
-            ))}
-            <Link href={user ? "/profile" : "/login"} onClick={() => setMobileOpen(false)} className="text-sm font-medium text-gray-900">
-              {user ? "My Profile" : "Account"}
-            </Link>
-            {user && (
-              <button onClick={() => { logout(); setMobileOpen(false); }} className="text-left text-sm font-medium text-red-500">
-                Log out
-              </button>
-            )}
-            {categories.map((c) => (
-              <Link key={c.slug} href={`/products?category=${c.slug}`} onClick={() => setMobileOpen(false)} className="text-sm text-gray-600">
-                {c.name}
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
     </header>
   );
 }

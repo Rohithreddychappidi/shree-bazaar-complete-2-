@@ -4,7 +4,7 @@ import { use, useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Heart, ShoppingCart, Minus, Plus, ChevronRight, Truck, ShieldCheck, Tag, Ruler, Ban } from "lucide-react";
+import { Heart, ShoppingCart, Minus, Plus, ChevronRight, Truck, ShieldCheck, Tag, Ruler, Share2, Check } from "lucide-react";
 import { useAdminData } from "@/lib/admin-data-context";
 import { useStore } from "@/lib/store-context";
 import { useSettings } from "@/lib/use-settings";
@@ -22,6 +22,22 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
   const [activeImage, setActiveImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
+  const [shared, setShared] = useState(false);
+
+  const handleShare = async () => {
+    const url = window.location.href;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: product.name, url });
+      } catch {
+        // user cancelled the native share sheet — not an error
+      }
+    } else {
+      await navigator.clipboard.writeText(url);
+      setShared(true);
+      setTimeout(() => setShared(false), 1800);
+    }
+  };
 
   const [couponInput, setCouponInput] = useState("");
   const [couponPreview, setCouponPreview] = useState<CouponValidation | null>(null);
@@ -183,17 +199,9 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
             )}
           </div>
 
-          <div className="mb-6 flex flex-wrap gap-2">
-            <div className="inline-flex items-center gap-2 rounded-lg bg-purple-50 px-3 py-1.5">
-              <Truck size={15} className="text-purple-700" />
-              <span className="text-[12.5px] font-semibold text-purple-700">Delivery by Shiprocket</span>
-            </div>
-            {product.noReturn && (
-              <div className="inline-flex items-center gap-2 rounded-lg bg-red-50 px-3 py-1.5">
-                <Ban size={15} className="text-red-600" />
-                <span className="text-[12.5px] font-semibold text-red-600">No Return / No Cancellation</span>
-              </div>
-            )}
+          <div className="mb-6 inline-flex items-center gap-2 rounded-lg bg-purple-50 px-3 py-1.5">
+            <Truck size={15} className="text-purple-700" />
+            <span className="text-[12.5px] font-semibold text-purple-700">Delivery by Shiprocket</span>
           </div>
 
           {/* Size selector (fashion) */}
@@ -347,6 +355,14 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
               aria-label="Toggle wishlist"
             >
               <Heart size={18} className={wishlisted ? "fill-purple-700 text-purple-700" : "text-gray-700"} />
+            </button>
+            <button
+              onClick={handleShare}
+              className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-xl border-2 border-[#E7E4F4] transition-colors hover:border-purple-400"
+              aria-label="Share this product"
+              title={shared ? "Link copied!" : "Share"}
+            >
+              {shared ? <Check size={18} className="text-green-600" /> : <Share2 size={18} className="text-gray-700" />}
             </button>
           </div>
 

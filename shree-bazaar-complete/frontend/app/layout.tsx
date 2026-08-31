@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import BottomNav from "@/components/BottomNav";
 import { StoreProvider } from "@/lib/store-context";
 import { AdminDataProvider } from "@/lib/admin-data-context";
 import { AuthProvider } from "@/lib/auth-context";
 import ProfileCompletionPrompt from "@/components/ProfileCompletionPrompt";
-import IntroSplash from "@/components/IntroSplash";
 
 export const metadata: Metadata = {
   title: "Shop Hemu | Traditional Food, Fashion & Gifting",
@@ -25,13 +25,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="antialiased">
-        <IntroSplash />
         <AuthProvider>
           <AdminDataProvider>
             <StoreProvider>
               <Navbar />
-              {children}
-              <Footer />
+              {/* pb-24 keeps page content (and the footer) clear of the floating mobile
+                  bottom nav — no extra padding needed on desktop, where it's hidden. */}
+              <div className="pb-24 md:pb-0">
+                {children}
+                <Footer />
+              </div>
+              <BottomNav />
               <ProfileCompletionPrompt />
             </StoreProvider>
           </AdminDataProvider>

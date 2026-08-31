@@ -1,22 +1,22 @@
 @import "tailwindcss";
 
 @theme {
-  --color-purple-50: #FBF3DC;
-  --color-purple-100: #F4E3B0;
-  --color-purple-400: #D8B84A;
-  --color-purple-500: #C6A233;
-  --color-purple-700: #B8952E;
-  --color-purple-800: #96751F;
-  --color-surface: #1C1B19;
-  --color-surface-fg: #F4E3B0;
-  --color-surface-muted: #12261D;
+  --color-purple-50: #EEF2EA;
+  --color-purple-100: #DCE6D6;
+  --color-purple-400: #7E9573;
+  --color-purple-500: #6B8460;
+  --color-purple-700: #536B48;
+  --color-purple-800: #3E5136;
+  --color-surface: #FBFAF5;
+  --color-surface-fg: #2B2620;
+  --color-surface-muted: #536B48;
   --font-display: "Playfair Display", serif;
   --font-sans: "Inter", sans-serif;
 }
 
 body {
-  background: #FAF3E6;
-  color: #111827;
+  background: #FFF9EF;
+  color: #2B2620;
   font-family: var(--font-sans);
 }
 
@@ -38,37 +38,6 @@ h1, h2, h3, h4, .font-display {
   width: 20px;
   border-radius: 4px;
   background: #fff;
-}
-
-/* Intro splash — wordmark assembles itself on first load, see IntroSplash.tsx */
-@keyframes intro-word-in {
-  from { opacity: 0; transform: translateY(10px) scale(0.94); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-@keyframes intro-rule-grow {
-  from { width: 0; opacity: 0; }
-  to { width: 48px; opacity: 1; }
-}
-@keyframes intro-fade-out {
-  from { opacity: 1; }
-  to { opacity: 0; }
-}
-.intro-word {
-  opacity: 0;
-  animation: intro-word-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-.intro-rule {
-  animation: intro-rule-grow 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: 0.55s;
-}
-.intro-exit {
-  animation: intro-fade-out 0.45s ease forwards;
-}
-@media (prefers-reduced-motion: reduce) {
-  .intro-word, .intro-rule, .intro-exit {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-  }
 }
 
 /* Scrolling announcement bar */
