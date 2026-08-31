@@ -23,30 +23,3 @@ body {
 h1, h2, h3, h4, .font-display {
   font-family: var(--font-display);
 }
-
-
-/* Swiper pagination dots, styled to match the brand */
-.hero-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.55);
-  display: inline-block;
-  cursor: pointer;
-  transition: all 0.25s ease;
-}
-.hero-dot-active {
-  width: 20px;
-  border-radius: 4px;
-  background: #fff;
-}
-
-/* Scrolling announcement bar */
-@keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-.animate-marquee {
-  display: inline-block;
-  animation: marquee 18s linear infinite;
-}

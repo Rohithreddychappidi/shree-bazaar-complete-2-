@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+@theme {
+  --color-purple-50: #FDF3E0;
+  --color-purple-100: #FAE4B8;
+  --color-purple-400: #E0AA3E;
+  --color-purple-500: #D69A2D;
+  --color-purple-700: #B57F1F;
+  --color-purple-800: #8F6418;
+  --color-surface: #FFFDF9;
+  --color-surface-fg: #2B211B;
+  --color-surface-muted: var(--color-purple-50);
+  --font-display: "Playfair Display", serif;
+  --font-sans: "Inter", sans-serif;
+}
+
+body {
+  background: #FFF9EF;
+  color: #2B211B;
+  font-family: var(--font-sans);
+}
+
+h1, h2, h3, h4, .font-display {
+  font-family: var(--font-display);
+}
