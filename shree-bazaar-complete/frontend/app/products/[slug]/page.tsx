@@ -25,19 +25,20 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
   const [shared, setShared] = useState(false);
 
   const handleShare = async () => {
-    const url = window.location.href;
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: product.name, url });
-      } catch {
-        // user cancelled the native share sheet — not an error
-      }
-    } else {
-      await navigator.clipboard.writeText(url);
-      setShared(true);
-      setTimeout(() => setShared(false), 1800);
+  if (!product) return;          // <-- add this guard
+  const url = window.location.href;
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: product.name, url });
+    } catch {
+      // user cancelled the native share sheet — not an error
     }
-  };
+  } else {
+    await navigator.clipboard.writeText(url);
+    setShared(true);
+    setTimeout(() => setShared(false), 1800);
+  }
+};
 
   const [couponInput, setCouponInput] = useState("");
   const [couponPreview, setCouponPreview] = useState<CouponValidation | null>(null);
