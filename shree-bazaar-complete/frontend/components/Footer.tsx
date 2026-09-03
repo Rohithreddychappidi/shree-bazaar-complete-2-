@@ -45,7 +45,7 @@ export default function Footer() {
   ].filter((s): s is { Icon: typeof FacebookIcon; href: string } => !!s);
 
   return (
-    <footer className="mt-[70px] bg-[#1B1030] text-[#D9D2EE]">
+    <footer className="mt-[70px] bg-[#3E5136] text-[#D9D2EE]">
       <div className="mx-auto grid max-w-[1280px] grid-cols-1 gap-8 px-6 py-[52px] sm:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1.3fr]">
         <div>
           <div className="mb-3 font-display text-[26px] font-extrabold text-white">Shop Hemu</div>
