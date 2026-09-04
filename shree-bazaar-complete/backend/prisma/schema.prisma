@@ -42,6 +42,7 @@ model User {
   addresses          Address[]
   orders             Order[]
   couponRedemptions  CouponRedemption[]
+  blogPosts          BlogPost[]
   createdProducts    Product[] @relation("ProductCreatedBy") // products this user (typically a sub-admin) added
   createdAt          DateTime  @default(now())
 }
@@ -79,13 +80,6 @@ model Product {
                                 // (size_color, weight) track stock per-variant instead, see
                                 // ProductVariant.stock below. Null = stock not tracked (always
                                 // orderable) for products created before this feature existed.
-  weightKg         Float       @default(0.3) // package weight used for live Shiprocket rate
-                                // calculation and shipment creation. Only used directly for
-                                // variantType "none" — variant products use ProductVariant.weightKg
-                                // (falling back to this value if a variant doesn't override it).
-  noReturn         Boolean     @default(false) // if true: no returns AND the customer's order
-                                // cancel option is hidden for any order containing this product
-                                // (e.g. perishable/food items that can't practically be reversed)
   outOfStockSince  DateTime?   // set the moment stock (or every variant's stock) hits 0;
                                 // cleared on restock. Products stay visible with an "Out of
                                 // Stock" label for 24h from this timestamp, then are hidden
@@ -93,9 +87,14 @@ model Product {
   pickupLocation   String?     // must match a pickup address name already registered in the
                                 // Shiprocket account — falls back to StoreSettings.defaultPickupLocation
                                 // if not set. Lets different products ship from different warehouses.
+  weightKg         Float       @default(0.3) // package weight used for live Shiprocket rate
+                                // calculation and shipment creation. Only used directly for
+                                // variantType "none" — variant products use ProductVariant.weightKg
+                                // (falling back to this value if a variant doesn't override it).
+  noReturn         Boolean     @default(false) // if true: no returns AND the customer's order
+                                // cancel option is hidden for any order containing this product
   createdById String?          // which staff member (admin or sub-admin) added this product —
                                 // null for products that existed before this field was added.
-                                // Used to scope sub-admins to only the orders for products they added.
   createdBy   User?            @relation("ProductCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
   categoryId  String
   category    Category         @relation(fields: [categoryId], references: [id])
@@ -118,8 +117,6 @@ model ProductVariant {
   oldPrice    Int
   stock       Int         @default(0)
   weightKg    Float?      // overrides the parent Product's weightKg for this specific variant
-                           // (e.g. a heavier size or a grocery weight-tier) — falls back to
-                           // Product.weightKg when null.
   orderItems  OrderItem[]
 }
 
@@ -131,8 +128,7 @@ model Address {
   name      String
   line      String
   city      String
-  pincode   String? // nullable for addresses saved before this field existed — falls back to
-                     // regex-extracting a 6-digit number from `city` where still needed
+  pincode   String? // nullable for addresses saved before this field existed
   phone     String
   isDefault Boolean @default(false)
 }
@@ -243,13 +239,7 @@ model StoreSettings {
   announcementText        String   @default("Free delivery on orders above ₹999 • Use code WELCOME10 for 10% off your first order")
   announcementEnabled     Boolean  @default(true)
   defaultPickupLocation   String   @default("Primary") // used for any product without its own pickupLocation set
-  defaultPickupPincode    String?  // pincode of the default pickup address — needed for live Shiprocket
-                                    // rate-checking (which requires both pickup + delivery pincode).
-                                    // Note: rate quotes always use this ONE pincode for the estimate,
-                                    // even for products whose actual pickupLocation differs — an
-                                    // approximation, not a per-warehouse-accurate quote. Real invoicing
-                                    // from Shiprocket is unaffected since actual shipment creation still
-                                    // uses each product's real pickupLocation correctly.
+  defaultPickupPincode    String?  // pincode of the default pickup address — needed for live Shiprocket rate-checking
   updatedAt               DateTime @updatedAt
 }
 
@@ -266,4 +256,24 @@ model HeroSlide {
   sortOrder Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// A blog post for SEO/content marketing — written in Markdown, rendered to HTML on
+// the storefront. Any staff member (admin or sub-admin) can write and publish one.
+model BlogPost {
+  id              String    @id @default(uuid())
+  slug            String    @unique
+  title           String
+  excerpt         String    // short summary shown on the blog listing page and in
+                             // search-result/social-share previews
+  content         String    @db.Text // Markdown source
+  coverImage      String?
+  metaTitle       String?   // falls back to `title` if not set — for the <title> tag
+  metaDescription String?   // falls back to `excerpt` if not set
+  published       Boolean   @default(false) // drafts are only visible in the admin panel
+  publishedAt     DateTime?
+  authorId        String?
+  author          User?     @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 }

@@ -11,8 +11,7 @@ router.use(requireStaff);
 // GET /api/my/orders — every order that contains at least one product the logged-in
 // staff member personally added (via createdById on Product). Returns the FULL order
 // (all items, full address, total) even if the order also contains other staff members'
-// products too — not just the line items this person owns. If a client ever wants
-// line-item-level redaction for mixed-vendor orders, that's a bigger follow-up change.
+// products too — not just the line items this person owns.
 router.get("/orders", async (req, res) => {
   const myProducts = await prisma.product.findMany({
     where: { createdById: req.user.id },

@@ -1,5 +1,7 @@
 const express = require("express");
 const cors = require("cors");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 const cookieParser = require("cookie-parser");
 const path = require("path");
 require("./config/passport"); // registers the Google strategy
@@ -19,9 +21,31 @@ const heroSlidesRoutes = require("./routes/hero-slides.routes");
 const staffRoutes = require("./routes/staff.routes");
 const myRoutes = require("./routes/my.routes");
 const couponsRoutes = require("./routes/coupons.routes");
+const blogRoutes = require("./routes/blog.routes");
 const marketingRoutes = require("./routes/marketing.routes");
 
 const app = express();
+
+// Required behind the Nginx reverse proxy — without this, Express always sees the
+// internal Nginx→Node connection (plain HTTP) instead of the real visitor's protocol,
+// which broke image URLs (they were being saved as http:// instead of https://) and
+// would also break any other code relying on req.protocol or req.secure.
+app.set("trust proxy", 1);
+
+// Sets a standard set of protective HTTP response headers (X-Content-Type-Options,
+// X-Frame-Options, etc.) — cheap, standard practice, no functional downside.
+app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } })); // cross-origin needed so product images can still load on the frontend's different domain
+
+// General abuse/scraping protection across the whole API — generous enough to never
+// affect a real customer or admin, just stops scripted hammering of the API.
+app.use(
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 600,
+    standardHeaders: true,
+    legacyHeaders: false,
+  })
+);
 
 // FRONTEND_URL can be a single origin or a comma-separated list — needed because
 // browsers treat www.yourdomain.com and yourdomain.com as two different origins for
@@ -72,6 +96,7 @@ app.use("/api/hero-slides", heroSlidesRoutes);
 app.use("/api/staff", staffRoutes);
 app.use("/api/my", myRoutes);
 app.use("/api/coupons", couponsRoutes);
+app.use("/api/blog", blogRoutes);
 app.use("/api/marketing", marketingRoutes);
 
 // Centralized error handler (e.g. multer file-type/size errors land here)

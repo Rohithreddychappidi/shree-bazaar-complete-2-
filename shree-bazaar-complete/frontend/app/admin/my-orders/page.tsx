@@ -9,9 +9,7 @@ export default function MyOrdersPage() {
   return (
     <div>
       <h1 className="mb-1 text-2xl font-bold text-gray-900">My Orders</h1>
-      <p className="mb-6 text-[13.5px] text-gray-500">
-        Orders that include at least one product you added.
-      </p>
+      <p className="mb-6 text-[13.5px] text-gray-500">Orders that include at least one product you added.</p>
 
       {loading && (
         <div className="flex items-center justify-center gap-2 py-16 text-gray-400">
@@ -60,7 +58,7 @@ export default function MyOrdersPage() {
                     <td className="px-5 py-3">
                       <span
                         className={`rounded-md px-2 py-1 text-[11px] font-semibold ${
-                          o.status === "Delivered" ? "bg-green-100 text-green-700" : "bg-purple-100 text-purple-700"
+                          o.status === "Delivered" ? "bg-green-100 text-green-700" : o.status === "Cancelled" ? "bg-red-100 text-red-600" : "bg-purple-100 text-purple-700"
                         }`}
                       >
                         {o.status}
@@ -84,18 +82,10 @@ export default function MyOrdersPage() {
             </tbody>
           </table>
           {orders.length === 0 && (
-            <div className="p-10 text-center text-[13.5px] text-gray-400">
-              No orders yet for the products you&apos;ve added.
-            </div>
+            <div className="p-10 text-center text-[13.5px] text-gray-400">No orders yet for the products you&apos;ve added.</div>
           )}
         </div>
       )}
-
-      <p className="mt-4 text-[11.5px] text-gray-400">
-        This view only shows orders containing at least one product you personally added. If an order also
-        includes products added by someone else, you&apos;ll still see the full order here — line items aren&apos;t
-        split by who added each product. Shipment creation and retries are handled by the store admin.
-      </p>
     </div>
   );
 }

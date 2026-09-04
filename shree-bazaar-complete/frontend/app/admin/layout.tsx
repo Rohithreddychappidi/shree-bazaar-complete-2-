@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
-import { LayoutDashboard, LayoutGrid, Package, ShoppingBag, Settings, ExternalLink, Loader2, Image as ImageIcon, Tag, Users, MessageCircle } from "lucide-react";
+import { LayoutDashboard, LayoutGrid, Package, ShoppingBag, Settings, ExternalLink, Loader2, Image as ImageIcon, Tag, Users, MessageCircle, FileText } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 
-// Master admin sees everything. Sub-admins only get Products, Categories and Coupons —
-// the rest (orders, settings, hero banners, staff management) stays admin-only.
+// Master admin sees everything. Sub-admins get Products, Categories, Coupons, Blog,
+// and their own scoped Orders view — the rest (store-wide orders, settings, hero
+// banners, staff management) stays admin-only.
 const masterOnlyItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/hero-slides", label: "Hero Banners", icon: ImageIcon },
@@ -16,6 +17,7 @@ const sharedItems = [
   { href: "/admin/categories", label: "Categories", icon: LayoutGrid },
   { href: "/admin/products", label: "Products", icon: Package },
   { href: "/admin/coupons", label: "Coupons", icon: Tag },
+  { href: "/admin/blog", label: "Blog", icon: FileText },
 ];
 const subAdminOnlyItems = [{ href: "/admin/my-orders", label: "My Orders", icon: ShoppingBag }];
 const masterOnlyItemsAfter = [
