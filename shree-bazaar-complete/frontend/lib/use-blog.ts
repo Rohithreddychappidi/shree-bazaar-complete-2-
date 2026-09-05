@@ -90,6 +90,7 @@ export function useAdminBlogPosts() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- initial data fetch on mount, not a derived-state anti-pattern
     refresh();
   }, [refresh]);
 
@@ -108,6 +109,7 @@ export function useAdminBlogPost(id: string | null) {
 
   useEffect(() => {
     if (!id) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- no id means nothing to fetch, not a derived-state anti-pattern
       setLoading(false);
       return;
     }

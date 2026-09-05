@@ -22,6 +22,7 @@ export function useMyOrders() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- initial data fetch on mount, not a derived-state anti-pattern
     refresh();
   }, [refresh]);
 
