@@ -7,23 +7,22 @@
   --color-purple-500: #6B8460;
   --color-purple-700: #536B48;
   --color-purple-800: #3E5136;
-  --color-surface: #FFFDF9;
-  --color-surface-fg: #2B211B;
-  --color-surface-muted: var(--color-purple-50);
-  --font-display: "Playfair Display", serif;
-  --font-sans: "Inter", sans-serif;
+  --color-surface: #FBFAF5;
+  --color-surface-fg: #2B2620;
+  --color-surface-muted: #536B48;
+  --font-display: var(--font-playfair), serif;
+  --font-sans: var(--font-inter), sans-serif;
 }
 
 body {
   background: #FFF9EF;
-  color: #2B211B;
+  color: #2B2620;
   font-family: var(--font-sans);
 }
 
 h1, h2, h3, h4, .font-display {
   font-family: var(--font-display);
 }
-
 
 /* Swiper pagination dots, styled to match the brand */
 .hero-dot {
