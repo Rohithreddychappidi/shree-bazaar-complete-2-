@@ -4,7 +4,7 @@ import { use, useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Heart, ShoppingCart, Minus, Plus, ChevronRight, Truck, ShieldCheck, Tag, Ruler, Share2, Check } from "lucide-react";
+import { Heart, ShoppingCart, Minus, Plus, ChevronRight, Truck, ShieldCheck, Tag, Ruler, Share2, Send, Check } from "lucide-react";
 import { useAdminData } from "@/lib/admin-data-context";
 import { useStore } from "@/lib/store-context";
 import { useSettings } from "@/lib/use-settings";
@@ -25,20 +25,20 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
   const [shared, setShared] = useState(false);
 
   const handleShare = async () => {
-  if (!product) return;          // <-- add this guard
-  const url = window.location.href;
-  if (navigator.share) {
-    try {
-      await navigator.share({ title: product.name, url });
-    } catch {
-      // user cancelled the native share sheet — not an error
+    if (!product) return;
+    const url = window.location.href;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: product.name, url });
+      } catch {
+        // user cancelled the native share sheet — not an error
+      }
+    } else {
+      await navigator.clipboard.writeText(url);
+      setShared(true);
+      setTimeout(() => setShared(false), 1800);
     }
-  } else {
-    await navigator.clipboard.writeText(url);
-    setShared(true);
-    setTimeout(() => setShared(false), 1800);
-  }
-};
+  };
 
   const [couponInput, setCouponInput] = useState("");
   const [couponPreview, setCouponPreview] = useState<CouponValidation | null>(null);
@@ -139,6 +139,14 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
         <div>
           <div className="relative mb-3 aspect-square overflow-hidden rounded-2xl bg-purple-50">
             <Image src={product.images[activeImage] ?? product.image} alt={product.name} fill className="object-cover" priority />
+            <button
+              onClick={handleShare}
+              className="absolute top-3 right-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow-md backdrop-blur-sm transition-transform hover:scale-105"
+              aria-label="Share this product"
+              title={shared ? "Link copied!" : "Share"}
+            >
+              {shared ? <Check size={17} className="text-green-600" /> : <Send size={17} className="text-purple-700" />}
+            </button>
           </div>
           {product.images.length > 1 && (
             <div className="flex gap-3">
