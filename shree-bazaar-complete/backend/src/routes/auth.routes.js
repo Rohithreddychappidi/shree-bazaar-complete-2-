@@ -1,10 +1,23 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
+const rateLimit = require("express-rate-limit");
 const passport = require("../config/passport");
 const prisma = require("../config/prisma");
 const { setAuthCookie, clearAuthCookie, requireAuth } = require("../middleware/auth");
 
 const router = express.Router();
+
+// Blocks brute-force password guessing: 8 attempts per IP per 15 minutes on the login
+// route specifically. Deliberately per-IP rather than per-email, so an attacker can't
+// avoid the limit by cycling through many email addresses from one machine, and a
+// legitimate sub-admin mistyping their password a few times in a row isn't locked out.
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 8,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many login attempts. Please try again in 15 minutes." },
+});
 
 const publicUser = (u) => ({
   id: u.id,
@@ -18,24 +31,29 @@ const publicUser = (u) => ({
   role: u.role,
 });
 
+// FRONTEND_URL can be a comma-separated list (see app.js's CORS setup) — for an actual
+// redirect target we need exactly one URL, so always use the first one in the list as
+// the canonical frontend origin.
+const PRIMARY_FRONTEND_URL = (process.env.FRONTEND_URL || "").split(",")[0].trim();
+
 // Step 1: send the user to Google's consent screen.
 router.get("/google", passport.authenticate("google", { scope: ["profile", "email"], session: false }));
 
 // Step 2: Google redirects back here with the result.
 router.get(
   "/google/callback",
-  passport.authenticate("google", { session: false, failureRedirect: `${process.env.FRONTEND_URL}/login?error=google` }),
+  passport.authenticate("google", { session: false, failureRedirect: `${PRIMARY_FRONTEND_URL}/login?error=google` }),
   (req, res) => {
     // req.user was set by the GoogleStrategy verify callback (see config/passport.js)
     setAuthCookie(res, req.user);
-    res.redirect(`${process.env.FRONTEND_URL}/`);
+    res.redirect(`${PRIMARY_FRONTEND_URL}/`);
   }
 );
 
 // POST /auth/login — email + password login, for sub-admin accounts the master admin
 // creates from /admin/staff. Regular customers and the master admin sign in with Google
 // only; this only works for a user that actually has a password set.
-router.post("/login", async (req, res) => {
+router.post("/login", loginLimiter, async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) return res.status(400).json({ error: "Email and password are required" });
 

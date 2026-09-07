@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Phone, Mail, MapPin } from "lucide-react";
 import { useSettings } from "@/lib/use-settings";
@@ -28,9 +29,32 @@ function LinkedinIcon() {
 }
 
 const columns = [
-  { title: "Company", links: ["About Us", "Careers", "Blog", "Contact Us"] },
-  { title: "Help", links: ["Track Order", "Shipping Info", "Cancellation Policy", "FAQs"] },
-  { title: "Policies", links: ["Privacy Policy", "Terms of Service", "Shipping Policy"] },
+  {
+    title: "Company",
+    links: [
+      { label: "About Us", href: "/about" },
+      { label: "Blog", href: "/blog" },
+      { label: "Contact Us", href: "/help" },
+    ],
+  },
+  {
+    title: "Help",
+    links: [
+      { label: "Track Order", href: "/profile/orders" },
+      { label: "Shipping Info", href: "/shipping-policy" },
+      { label: "Returns & Cancellation", href: "/returns-policy" },
+      { label: "FAQs", href: "/help" },
+    ],
+  },
+  {
+    title: "Policies",
+    links: [
+      { label: "Privacy Policy", href: "/privacy-policy" },
+      { label: "Terms & Conditions", href: "/terms" },
+      { label: "Shipping Policy", href: "/shipping-policy" },
+      { label: "Returns & Cancellation", href: "/returns-policy" },
+    ],
+  },
 ];
 
 export default function Footer() {
@@ -45,10 +69,10 @@ export default function Footer() {
   ].filter((s): s is { Icon: typeof FacebookIcon; href: string } => !!s);
 
   return (
-    <footer className="mt-[70px] bg-[#3E5136] text-[#D9D2EE]">
+    <footer className="mt-[70px] bg-[#1B1030] text-[#D9D2EE]">
       <div className="mx-auto grid max-w-[1280px] grid-cols-1 gap-8 px-6 py-[52px] sm:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1.3fr]">
         <div>
-          <div className="mb-3 font-display text-[26px] font-extrabold text-white">Shop Hemu</div>
+          <div className="mb-3 font-display text-[22px] font-extrabold text-white">Shop Hemu</div>
           <p className="mb-4 text-[13px] leading-relaxed opacity-75">
             Traditional food, fashion, pooja essentials and gifting — brought to your doorstep with the care of home.
           </p>
@@ -67,8 +91,10 @@ export default function Footer() {
             <h5 className="mb-4 text-[13.5px] font-semibold text-white">{col.title}</h5>
             <ul>
               {col.links.map((l) => (
-                <li key={l} className="mb-2.5 text-[13px] opacity-80 hover:cursor-pointer hover:opacity-100 hover:text-white">
-                  {l}
+                <li key={l.label} className="mb-2.5 text-[13px]">
+                  <Link href={l.href} className="opacity-80 hover:opacity-100 hover:text-white">
+                    {l.label}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -103,7 +129,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="mx-auto flex max-w-[1280px] flex-wrap items-center justify-between gap-2.5 border-t border-white/8 px-6 py-[18px] text-[12.5px] opacity-65">
-        <span>© 2026 Shop Hemu. All rights reserved.</span>
+        <span>© 2026 Shree Bazaar. All rights reserved.</span>
         <span>Secure payments powered by Razorpay &nbsp;•&nbsp; Shipping by Shiprocket</span>
       </div>
     </footer>
