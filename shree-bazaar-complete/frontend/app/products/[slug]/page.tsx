@@ -4,7 +4,7 @@ import { use, useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Heart, ShoppingCart, Minus, Plus, ChevronRight, Truck, ShieldCheck, Tag, Ruler, Share2, Send, Check } from "lucide-react";
+import { Heart, ShoppingCart, Minus, Plus, ChevronRight, Truck, ShieldCheck, Tag, Ruler, Share2, Send, Check, Loader2 } from "lucide-react";
 import { useAdminData } from "@/lib/admin-data-context";
 import { useStore } from "@/lib/store-context";
 import { useSettings } from "@/lib/use-settings";
@@ -15,7 +15,7 @@ import Button from "@/components/Button";
 
 export default function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
-  const { products } = useAdminData();
+  const { products, loading: productsLoading } = useAdminData();
   const product = products.find((p) => p.slug === slug);
   const { addToCart, toggleWishlist, isWishlisted } = useStore();
   const { settings } = useSettings();
@@ -75,6 +75,17 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
     return map;
   }, [sizes, product]);
 
+  // Wait for the shared products list to actually finish loading before deciding this
+  // product doesn't exist. On a hard refresh/direct link, `products` starts empty while
+  // the list is still being fetched — without this guard, `.find()` returns nothing on
+  // that very first render and the page would 404 before the real data ever arrives.
+  if (productsLoading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center text-gray-400">
+        <Loader2 size={24} className="animate-spin" />
+      </div>
+    );
+  }
   if (!product) return notFound();
 
   const hasVariants = product.variantType !== "none" && (product.variants?.length ?? 0) > 0;
