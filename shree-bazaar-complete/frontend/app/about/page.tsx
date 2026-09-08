@@ -1,7 +1,13 @@
+"use client";
+
 import Image from "next/image";
+import { marked } from "marked";
+import DOMPurify from "isomorphic-dompurify";
+import { useState, useEffect } from "react";
 import TeamCard from "@/components/TeamCard";
 import { team } from "@/lib/data";
-import { Heart, Leaf, Handshake } from "lucide-react";
+import { Heart, Leaf, Handshake, Loader2 } from "lucide-react";
+import { useAboutContent } from "@/lib/use-about";
 
 const values = [
   { icon: Heart, title: "Made with Care", text: "Every product is sourced or made the way it would be for our own family." },
@@ -17,28 +23,43 @@ const timeline = [
 ];
 
 export default function AboutPage() {
+  const { content, loading } = useAboutContent();
+  const [storyHtml, setStoryHtml] = useState("");
+
+  useEffect(() => {
+    if (!content?.storyContent) return;
+    Promise.resolve(marked.parse(content.storyContent)).then((raw) => setStoryHtml(DOMPurify.sanitize(raw)));
+  }, [content?.storyContent]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center text-gray-400">
+        <Loader2 size={22} className="animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <main>
       <section className="relative flex h-[280px] items-center justify-center overflow-hidden bg-purple-700 text-center text-white sm:h-[340px]">
         <Image
-          src="https://images.unsplash.com/photo-1596040033229-a9821ebd058d?q=80&w=1600&auto=format&fit=crop"
+          src={content?.heroImage || "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?q=80&w=1600&auto=format&fit=crop"}
           alt="Shop Hemu"
           fill
           className="object-cover opacity-30"
         />
         <div className="relative z-10 px-6">
-          <div className="mb-3 text-xs font-semibold tracking-[2px] uppercase opacity-85">Our Story</div>
-          <h1 className="text-3xl font-bold sm:text-4xl">Who We Are</h1>
+          <div className="mb-3 text-xs font-semibold tracking-[2px] uppercase opacity-85">{content?.heroSubtitle || "Our Story"}</div>
+          <h1 className="text-3xl font-bold sm:text-4xl">{content?.heroTitle || "Who We Are"}</h1>
         </div>
       </section>
 
       <section className="mx-auto max-w-[900px] px-6 py-14 text-center">
-        <h2 className="mb-4 text-2xl font-bold text-gray-900">From a home kitchen to your doorstep</h2>
-        <p className="text-[15px] leading-relaxed text-gray-500">
-          Shop Hemu started with a simple idea — bring the food, fashion and everyday essentials of home to
-          people who no longer live close to it. What began with homemade pickles and podis has grown into a
-          full marketplace spanning food, women&apos;s wear, pooja items, home decor and gifting.
-        </p>
+        <h2 className="mb-4 text-2xl font-bold text-gray-900">{content?.storyTitle || "From a home kitchen to your doorstep"}</h2>
+        <div
+          className="prose prose-gray mx-auto max-w-none text-[15px] leading-relaxed text-gray-500 prose-p:text-gray-500"
+          dangerouslySetInnerHTML={{ __html: storyHtml }}
+        />
       </section>
 
       <section className="bg-white py-14">
