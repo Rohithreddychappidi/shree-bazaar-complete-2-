@@ -18,11 +18,13 @@ export default function AdminAboutPage() {
 
   useEffect(() => {
     if (!content) return;
+    /* eslint-disable react-hooks/set-state-in-effect -- populating form fields once when content first loads, not a derived-state anti-pattern */
     setHeroImage(content.heroImage ?? "");
     setHeroTitle(content.heroTitle);
     setHeroSubtitle(content.heroSubtitle);
     setStoryTitle(content.storyTitle);
     setStoryContent(content.storyContent);
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [content]);
 
   const handleImageUpload = async (file: File) => {
