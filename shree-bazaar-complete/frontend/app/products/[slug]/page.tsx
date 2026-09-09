@@ -148,8 +148,8 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
         {/* Gallery */}
         <div>
-          <div className="relative mb-3 aspect-square overflow-hidden rounded-2xl bg-purple-50">
-            <Image src={product.images[activeImage] ?? product.image} alt={product.name} fill className="object-cover" priority />
+          <div className="relative mb-3 aspect-square overflow-hidden rounded-2xl bg-black">
+            <Image src={product.images[activeImage] ?? product.image} alt={product.name} fill className="object-contain" priority />
             <button
               onClick={handleShare}
               className="absolute top-3 right-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow-md backdrop-blur-sm transition-transform hover:scale-105"

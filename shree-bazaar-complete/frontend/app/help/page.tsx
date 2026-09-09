@@ -21,7 +21,7 @@ export default function HelpPage() {
   return (
     <main className="mx-auto max-w-[820px] px-6 py-10">
       <div className="mb-10 text-center">
-        <p className="mb-1 text-[12px] font-semibold tracking-[2px] text-purple-700 uppercase">We're Here to Help</p>
+        <p className="mb-1 text-[12px] font-semibold tracking-[2px] text-purple-700 uppercase">We&apos;re Here to Help</p>
         <h1 className="font-display text-3xl font-bold text-gray-900">Help & FAQs</h1>
       </div>
 

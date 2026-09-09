@@ -132,7 +132,7 @@ export default function AdminAboutPage() {
       </form>
 
       <p className="mt-6 max-w-[720px] text-[11.5px] text-gray-400">
-        The Values, Timeline, and Team sections further down the About page aren&apos;t editable here yet — they're
+        The Values, Timeline, and Team sections further down the About page aren&apos;t editable here yet — they&apos;re
         still built directly into the page code. Let us know if those should become editable too.
       </p>
     </div>
