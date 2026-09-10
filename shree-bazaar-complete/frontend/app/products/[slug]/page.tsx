@@ -1,9 +1,9 @@
 "use client";
 
-import { use, useState, useMemo } from "react";
+import { use, useState, useMemo, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import { Heart, ShoppingCart, Minus, Plus, ChevronRight, Truck, ShieldCheck, Tag, Ruler, Share2, Send, Check, Loader2 } from "lucide-react";
 import { useAdminData } from "@/lib/admin-data-context";
 import { useStore } from "@/lib/store-context";
@@ -18,6 +18,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
   const { products, loading: productsLoading } = useAdminData();
   const product = products.find((p) => p.slug === slug);
   const { addToCart, toggleWishlist, isWishlisted } = useStore();
+  const router = useRouter();
   const { settings } = useSettings();
   const [activeImage, setActiveImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -75,6 +76,24 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
     return map;
   }, [sizes, product]);
 
+  // Auto-select the variant when there's only ONE possible choice, so the customer isn't
+  // forced to click something that isn't actually a real decision — Add to Cart / Buy Now
+  // become usable immediately instead of staying disabled until a manual click.
+  useEffect(() => {
+    if (!product || product.variantType === "none") return;
+    const variants = product.variants ?? [];
+    if (variants.length !== 1) return;
+    const only = variants[0];
+    /* eslint-disable react-hooks/set-state-in-effect -- auto-selecting the single available variant once product data loads, not a derived-state anti-pattern */
+    if (product.variantType === "size-color") {
+      if (only.size) setSelectedSize(only.size);
+      if (only.color?.name) setSelectedColor(only.color.name);
+    } else if (product.variantType === "weight" && only.weightLabel) {
+      setSelectedWeight(only.weightLabel);
+    }
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, [product]);
+
   // Wait for the shared products list to actually finish loading before deciding this
   // product doesn't exist. On a hard refresh/direct link, `products` starts empty while
   // the list is still being fetched — without this guard, `.find()` returns nothing on
@@ -112,6 +131,12 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
     addToCart(product, selectedVariant, quantity);
     setAdded(true);
     setTimeout(() => setAdded(false), 1800);
+  };
+
+  const handleBuyNow = () => {
+    if (!canAdd) return;
+    addToCart(product, selectedVariant, quantity);
+    router.push("/checkout");
   };
 
   const handleCheckCoupon = async () => {
@@ -367,6 +392,15 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                 ? "Out of Stock"
                 : "Add to Cart"}
             </Button>
+            <button
+              onClick={handleBuyNow}
+              disabled={!canAdd}
+              className={`flex-1 rounded-xl bg-gray-900 px-4 py-3 text-[13.5px] font-semibold text-white transition-colors hover:bg-black ${
+                !canAdd ? "pointer-events-none opacity-50" : ""
+              }`}
+            >
+              Buy Now
+            </button>
             <button
               onClick={() => toggleWishlist(product)}
               className={`flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-xl border-2 transition-colors ${
