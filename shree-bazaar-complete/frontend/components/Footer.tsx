@@ -129,7 +129,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="mx-auto flex max-w-[1280px] flex-wrap items-center justify-between gap-2.5 border-t border-white/8 px-6 py-[18px] text-[12.5px] opacity-65">
-        <span>© 2026 Shree Bazaar. All rights reserved.</span>
+        <span>© 2026 Shop Hemu. All rights reserved.</span>
         <span>Secure payments powered by Razorpay &nbsp;•&nbsp; Shipping by Shiprocket</span>
       </div>
     </footer>
