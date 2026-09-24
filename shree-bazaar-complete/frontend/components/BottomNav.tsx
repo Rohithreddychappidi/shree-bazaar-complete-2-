@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { ShoppingCart, LayoutGrid, Package, UserCircle2, LogOut, User } from "lucide-react";
+import { Home, ShoppingCart, LayoutGrid, Package, UserCircle2, LogOut, User } from "lucide-react";
 import { useStore } from "@/lib/store-context";
 import { useAuth } from "@/lib/auth-context";
 
@@ -27,14 +27,15 @@ export default function BottomNav() {
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
 
   const items = [
+    { href: "/", label: "Home", icon: Home },
     { href: "/cart", label: "Cart", icon: ShoppingCart, badge: cartCount },
     { href: "/products", label: "Products", icon: LayoutGrid },
     { href: "/profile/orders", label: "Orders", icon: Package },
   ];
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-50 flex justify-center px-3 pb-3 md:hidden">
-      <div className="flex items-center gap-1 rounded-full border border-white/40 bg-surface/75 px-2 py-2 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.25)] backdrop-blur-xl">
+    <nav className="fixed inset-x-0 bottom-0 z-50 flex justify-center px-2 pb-3 md:hidden">
+      <div className="flex items-center gap-0.5 rounded-full border border-white/40 bg-surface/75 px-1.5 py-2 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.25)] backdrop-blur-xl">
         {items.map((item) => {
           const Icon = item.icon;
           const active = isActive(item.href);
@@ -42,12 +43,12 @@ export default function BottomNav() {
             <Link
               key={item.href}
               href={item.href}
-              className={`relative flex flex-col items-center gap-0.5 rounded-full px-4 py-2 text-[10.5px] font-medium transition-colors ${
+              className={`relative flex flex-col items-center gap-0.5 rounded-full px-3 py-2 text-[10px] font-medium transition-colors ${
                 active ? "bg-purple-700 text-white" : "text-surface-fg/70"
               }`}
             >
               <span className="relative">
-                <Icon size={20} strokeWidth={active ? 2.2 : 1.8} />
+                <Icon size={19} strokeWidth={active ? 2.2 : 1.8} />
                 {item.badge != null && item.badge > 0 && (
                   <span className="absolute -top-1.5 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white">
                     {item.badge}
@@ -59,23 +60,21 @@ export default function BottomNav() {
           );
         })}
 
-        {/* Profile — tapping opens a small menu above the bar with My Profile + Log out,
-            rather than navigating straight there, since logout needs to live somewhere on mobile
-            now that the hamburger menu is gone. */}
+        {/* Profile — tapping opens a small menu above the bar with My Profile + Log out */}
         <div className="relative" ref={menuRef}>
           {user ? (
             <button
               onClick={() => setMenuOpen((v) => !v)}
-              className={`flex flex-col items-center gap-0.5 rounded-full px-4 py-2 text-[10.5px] font-medium transition-colors ${
+              className={`flex flex-col items-center gap-0.5 rounded-full px-3 py-2 text-[10px] font-medium transition-colors ${
                 menuOpen || pathname.startsWith("/profile") ? "bg-purple-700 text-white" : "text-surface-fg/70"
               }`}
             >
-              <UserCircle2 size={20} strokeWidth={menuOpen ? 2.2 : 1.8} />
+              <UserCircle2 size={19} strokeWidth={menuOpen ? 2.2 : 1.8} />
               Profile
             </button>
           ) : (
-            <Link href="/login" className="flex flex-col items-center gap-0.5 rounded-full px-4 py-2 text-[10.5px] font-medium text-surface-fg/70">
-              <User size={20} strokeWidth={1.8} />
+            <Link href="/login" className="flex flex-col items-center gap-0.5 rounded-full px-3 py-2 text-[10px] font-medium text-surface-fg/70">
+              <User size={19} strokeWidth={1.8} />
               Login
             </Link>
           )}
